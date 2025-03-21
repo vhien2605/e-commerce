@@ -41,10 +41,6 @@ public class User extends AbstractEntity {
     @Column(name = "email")
     private String email;
 
-    @NotBlank(message = "Address must not be blank!")
-    @Column(name = "address")
-    private String address;
-
 
     @EnumPattern(name = "gender", regexp = "MALE|FEMALE")
     @Enumerated(EnumType.STRING)
@@ -60,4 +56,10 @@ public class User extends AbstractEntity {
     @ManyToMany
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
+
+    @NotNull(message = "Address must be required!")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    private Address address;
 }

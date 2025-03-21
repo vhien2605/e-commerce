@@ -3,6 +3,7 @@ package single.project.e_commerce.dto.request;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import single.project.e_commerce.models.Address;
 import single.project.e_commerce.utils.annotations.EnumPattern;
 import single.project.e_commerce.utils.enums.Gender;
 import single.project.e_commerce.utils.enums.Status;
@@ -25,8 +26,8 @@ public class UserRequestDTO implements Serializable {
     @Email(message = "Input is not email type!")
     private String email;
 
-    @NotBlank(message = "Address must not be blank!")
-    private String address;
+    @NotNull(message = "Address must not be null!")
+    private AddressRequestDTO address;
 
     @EnumPattern(name = "gender", regexp = "MALE|FEMALE")
     private Gender gender;

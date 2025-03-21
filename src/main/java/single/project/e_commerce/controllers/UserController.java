@@ -17,8 +17,12 @@ public class UserController {
 
     @GetMapping("/")
     @PreAuthorize("hasAuthority('read_user')")
-    public String getAllUser() {
-        return "get all users successfully";
+    public ApiResponse getAllUser() {
+        return ApiSuccessResponse.builder()
+                .data(userService.getAllUsers())
+                .status(200)
+                .message("Get all users successfully!")
+                .build();
     }
 
 

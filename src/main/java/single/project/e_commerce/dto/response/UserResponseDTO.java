@@ -6,6 +6,7 @@ import single.project.e_commerce.utils.enums.Gender;
 import single.project.e_commerce.utils.enums.Status;
 
 import java.io.Serializable;
+import java.util.Set;
 
 
 @Getter
@@ -16,4 +17,5 @@ public class UserResponseDTO implements Serializable {
     private String email;
     private Gender gender;
     private Status status;
+    private Set<RoleResponseDTO> roles;
 }
