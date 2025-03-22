@@ -7,7 +7,6 @@ import single.project.e_commerce.dto.request.AddressRequestDTO;
 import single.project.e_commerce.dto.response.AddressResponseDTO;
 import single.project.e_commerce.exceptions.DataInvalidException;
 import single.project.e_commerce.mappers.AddressMapper;
-import single.project.e_commerce.models.Address;
 import single.project.e_commerce.repositories.AddressRepository;
 
 @Service
@@ -17,7 +16,7 @@ public class AddressService {
     private final AddressMapper addressMapper;
 
     public AddressResponseDTO getAddressWithUsersByLocation(AddressRequestDTO request) {
-        return addressMapper.toResponse(addressRepository.getAddressByLocation(request.getName(),
+        return addressMapper.toResponse(addressRepository.getAddressWithUsersAndRoles(request.getName(),
                         request.getCity(),
                         request.getCountry()
                 ).orElseThrow(() -> new DataInvalidException("Can't find any users with invalid address"))

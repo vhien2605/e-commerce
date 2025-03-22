@@ -11,7 +11,7 @@ import single.project.e_commerce.repositories.UserRepository;
 import single.project.e_commerce.services.AuthenticationService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final UserRepository userRepository;

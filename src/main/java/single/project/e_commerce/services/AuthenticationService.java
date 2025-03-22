@@ -1,7 +1,6 @@
 package single.project.e_commerce.services;
 
 
-import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,10 +9,9 @@ import single.project.e_commerce.dto.response.TokenResponseDTO;
 import single.project.e_commerce.exceptions.AuthenticationException;
 import single.project.e_commerce.models.User;
 import single.project.e_commerce.repositories.UserRepository;
-import single.project.e_commerce.security.SecurityUser;
+import single.project.e_commerce.security.auth_entities.SecurityUser;
 import single.project.e_commerce.utils.enums.TokenType;
 
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
 
     public TokenResponseDTO authenticate(LoginRequestDTO request) {
-        User user = userRepository.findByUsername(
+        User user = userRepository.findUserWithRoleAndPermissionByUsername(
                         request.getUsername())
                 .orElseThrow(() -> new AuthenticationException("Bad Credentials!"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

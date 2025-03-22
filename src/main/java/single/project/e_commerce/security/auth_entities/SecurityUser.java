@@ -1,4 +1,4 @@
-package single.project.e_commerce.security;
+package single.project.e_commerce.security.auth_entities;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -59,6 +59,7 @@ public class UserService {
 
 
     public List<UserResponseDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::toResponse).toList();
+        return userRepository.findAllUsersWithRolesAndAddress()
+                .stream().map(userMapper::toResponse).toList();
     }
 }

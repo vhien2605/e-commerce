@@ -14,14 +14,13 @@ import single.project.e_commerce.services.AddressService;
 
 
 @RestController
-@RequestMapping("/address/manager")
+@RequestMapping("/api/address/manager")
 @RequiredArgsConstructor
 public class AddressController {
     private final AddressService addressService;
 
-
     @GetMapping("/users")
-    @PreAuthorize("read_user")
+    @PreAuthorize("hasAuthority('read_user')")
     public ApiResponse getUsersInLocation(@RequestBody AddressRequestDTO request) {
         return ApiSuccessResponse.builder()
                 .data(addressService.getAddressWithUsersByLocation(request))

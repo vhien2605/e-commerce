@@ -10,7 +10,7 @@ import single.project.e_commerce.dto.response.ApiSuccessResponse;
 import single.project.e_commerce.services.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;

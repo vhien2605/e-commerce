@@ -7,13 +7,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-import single.project.e_commerce.dto.response.TokenResponseDTO;
 import single.project.e_commerce.exceptions.DataInvalidException;
-import single.project.e_commerce.security.SecurityUser;
+import single.project.e_commerce.security.auth_entities.SecurityUser;
 import single.project.e_commerce.utils.enums.TokenType;
 
 import java.security.Key;
@@ -40,18 +38,29 @@ public class JwtService {
     private String resetKey;
 
     public String generateToken(SecurityUser user, TokenType type) {
-        return generateToken(Map.of("userId", user.getAuthorities()), user, type);
+        return generateToken(Map.of("userId", user.getAuthorities().
+                stream().map(GrantedAuthority::getAuthority).toList()
+        ), user, type);
+    }
+
+    public boolean isValid(String token, TokenType type) {
+        var claims = extractAllClaim(token, type);  // if signature not match and other invalids -> throw exception
+        return !isExpired(token, type);
+    }
+
+    public boolean isExpired(String token, TokenType type) {
+        return extractExpiration(token, type).before(new Date());
     }
 
     private String generateToken(Map<String, Object> claims, SecurityUser user, TokenType type) {
         log.info("------------------------- start generating token ------------------------------");
         long expireTime;
         if (type.equals(TokenType.ACCESS)) {
-            expireTime = 1000 * 60 * 60 * accessTimeOut;
+            expireTime = 1000L * 60 * 60 * accessTimeOut;
         } else if (type.equals(TokenType.REFRESH)) {
-            expireTime = 1000 * 60 * 60 * 24 * 30 * refreshTimeOut;
+            expireTime = 1000L * 60 * 60 * 24 * 30 * refreshTimeOut;
         } else {
-            expireTime = 1000 * 60 * refreshTimeOut;
+            expireTime = 1000L * 60 * refreshTimeOut;
         }
         return Jwts.builder()
                 .setClaims(claims)
@@ -79,6 +88,10 @@ public class JwtService {
 
     public String extractUsername(String token, TokenType type) {
         return extractClaim(token, type, Claims::getSubject);
+    }
+
+    public Date extractExpiration(String token, TokenType type) {
+        return extractClaim(token, type, Claims::getExpiration);
     }
 
     private <T> T extractClaim(String token, TokenType type, Function<Claims, T> claimsFunction) {

@@ -7,6 +7,21 @@ SELECT 'CUSTOMER' WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name = 'CUSTOMER')
 INSERT INTO roles (name)
 SELECT 'SELLER' WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name = 'SELLER');
 
+INSERT INTO roles (name)
+SELECT 'SYSTEM_ADMIN' WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name = 'SYSTEM_ADMIN');
+
+
+INSERT INTO permissions (name)
+SELECT 'read_role' WHERE NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'read_role');
+
+INSERT INTO permissions (name)
+SELECT 'update_role' WHERE NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'update_role');
+
+INSERT INTO permissions (name)
+SELECT 'delete_role' WHERE NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'delete_role');
+
+INSERT INTO permissions (name)
+SELECT 'create_role' WHERE NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'create_role');
 
 INSERT INTO permissions (name)
 SELECT 'read_user' WHERE NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'read_user');
@@ -38,7 +53,15 @@ SELECT 'create_cart' WHERE NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'c
 
 INSERT INTO roles_permissions (role_id, permission_id)
 SELECT r.id, p.id FROM roles r, permissions p
-WHERE r.name = 'ADMIN'
+WHERE r.name = 'ADMIN' AND p.name IN ('read_product', 'create_product',
+ 'update_product', 'delete_product','read_user','update_user','delete_user','create_user','create_cart')
+AND NOT EXISTS (
+    SELECT 1 FROM roles_permissions rp WHERE rp.role_id = r.id AND rp.permission_id = p.id
+);
+
+INSERT INTO roles_permissions (role_id, permission_id)
+SELECT r.id, p.id FROM roles r, permissions p
+WHERE r.name = 'SYSTEM_ADMIN'
 AND NOT EXISTS (
     SELECT 1 FROM roles_permissions rp WHERE rp.role_id = r.id AND rp.permission_id = p.id
 );
