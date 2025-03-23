@@ -1,6 +1,8 @@
 package single.project.e_commerce.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import single.project.e_commerce.dto.request.UserRequestDTO;
@@ -22,6 +24,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -61,5 +64,12 @@ public class UserService {
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAllUsersWithRolesAndAddress()
                 .stream().map(userMapper::toResponse).toList();
+    }
+
+
+    @PreAuthorize("hasRole('vailonthat')")
+    public String checker() {
+        log.info("start checker service method");
+        return "1";
     }
 }

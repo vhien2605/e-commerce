@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import single.project.e_commerce.dto.response.ApiErrorResponse;
@@ -27,9 +28,10 @@ public class UrlRegistryFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("-------------------------------URL invalid filter start------------------------------");
         String requestUri = request.getRequestURI();
+        AntPathMatcher antPathMatcher = new AntPathMatcher();
         boolean isRegisteredRoute = handlerMapping.getHandlerMethods()
                 .keySet().stream().flatMap(i -> i.getPatternValues().stream())
-                .anyMatch(stringUrl -> stringUrl.equals(requestUri));
+                .anyMatch(stringUrl -> antPathMatcher.match(stringUrl, requestUri));
         if (!isRegisteredRoute) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpStatus.OK.value());

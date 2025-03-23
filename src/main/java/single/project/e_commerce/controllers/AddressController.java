@@ -3,6 +3,7 @@ package single.project.e_commerce.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import single.project.e_commerce.services.AddressService;
 @RestController
 @RequestMapping("/api/address/manager")
 @RequiredArgsConstructor
+@Validated
 public class AddressController {
     private final AddressService addressService;
 

@@ -2,6 +2,7 @@ package single.project.e_commerce.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import single.project.e_commerce.dto.request.LoginRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
@@ -13,6 +14,7 @@ import single.project.e_commerce.services.AuthenticationService;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Validated
 public class AuthenticationController {
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
