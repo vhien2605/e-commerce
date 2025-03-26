@@ -16,6 +16,7 @@ import single.project.e_commerce.utils.enums.TokenType;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -29,6 +30,7 @@ public class JwtService {
     private long refreshTimeOut;
     @Value("${security.jwt.reset.timeout}")
     private long resetTimeOut;
+    
 
     @Value("${security.jwt.access.key}")
     private String accessKey;
@@ -38,9 +40,7 @@ public class JwtService {
     private String resetKey;
 
     public String generateToken(SecurityUser user, TokenType type) {
-        return generateToken(Map.of("userId", user.getAuthorities().
-                stream().map(GrantedAuthority::getAuthority).toList()
-        ), user, type);
+        return generateToken(Map.of("userId", buildScopes(user)), user, type);
     }
 
     public boolean isValid(String token, TokenType type) {
@@ -84,6 +84,10 @@ public class JwtService {
             throw new DataInvalidException("token type is invalid");
         }
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private List<String> buildScopes(SecurityUser user) {
+        return user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
     }
 
     public String extractUsername(String token, TokenType type) {

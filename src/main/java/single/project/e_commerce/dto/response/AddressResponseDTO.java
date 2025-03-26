@@ -1,7 +1,6 @@
 package single.project.e_commerce.dto.response;
 
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
