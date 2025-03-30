@@ -2,8 +2,9 @@ package single.project.e_commerce.utils.validators;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import single.project.e_commerce.exceptions.DataInvalidException;
+import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.utils.annotations.EnumPattern;
+import single.project.e_commerce.utils.enums.ErrorCode;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +18,7 @@ public class EnumPatternValidator implements ConstraintValidator<EnumPattern, En
         try {
             pattern = Pattern.compile(annotation.regexp());
         } catch (PatternSyntaxException e) {
-            throw new DataInvalidException("Given regex in the EnumPattern is invalid!");
+            throw new AppException(ErrorCode.REGEX_INVALID);
         }
     }
 

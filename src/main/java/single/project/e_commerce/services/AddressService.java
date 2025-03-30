@@ -5,9 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import single.project.e_commerce.dto.request.AddressRequestDTO;
 import single.project.e_commerce.dto.response.AddressResponseDTO;
-import single.project.e_commerce.exceptions.DataInvalidException;
+import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.mappers.AddressMapper;
 import single.project.e_commerce.repositories.AddressRepository;
+import single.project.e_commerce.utils.enums.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class AddressService {
         return addressMapper.toResponse(addressRepository.getAddressWithUsersAndRoles(request.getName(),
                         request.getCity(),
                         request.getCountry()
-                ).orElseThrow(() -> new DataInvalidException("Can't find any users with invalid address"))
+                ).orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXIST))
         );
     }
 }

@@ -5,14 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import single.project.e_commerce.dto.request.RoleRequestDTO;
 import single.project.e_commerce.dto.response.RoleResponseDTO;
-import single.project.e_commerce.exceptions.DataDuplicateException;
-import single.project.e_commerce.exceptions.DataInvalidException;
-import single.project.e_commerce.mappers.PermissionMapper;
+import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.mappers.RoleMapper;
 import single.project.e_commerce.models.Permission;
 import single.project.e_commerce.models.Role;
 import single.project.e_commerce.repositories.PermissionRepository;
 import single.project.e_commerce.repositories.RoleRepository;
+import single.project.e_commerce.utils.enums.ErrorCode;
 
 
 import java.util.HashSet;
@@ -27,7 +26,7 @@ public class RoleService {
 
     public RoleResponseDTO createRole(RoleRequestDTO requestDTO) {
         if (roleRepository.existsByName(requestDTO.getName())) {
-            throw new DataDuplicateException("Role's name is exists");
+            throw new AppException(ErrorCode.ROLE_EXISTED);
         }
 
         // find existed permissions
@@ -49,7 +48,7 @@ public class RoleService {
 
     public RoleResponseDTO updateRole(Long roleId, RoleRequestDTO dto) {
         Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new DataInvalidException("Role with input name is not exist!"));
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
 
         // find permissions if exist
         List<Permission> permissions = permissionRepository.findAllByNameIn(dto.getPermissions().stream().toList());

@@ -2,29 +2,24 @@ package single.project.e_commerce.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import single.project.e_commerce.dto.request.UserRequestDTO;
 import single.project.e_commerce.dto.request.UserUpdateRequestDTO;
 import single.project.e_commerce.dto.response.UserResponseDTO;
-import single.project.e_commerce.exceptions.DataDuplicateException;
-import single.project.e_commerce.exceptions.DataInvalidException;
+import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.mappers.AddressMapper;
-import single.project.e_commerce.mappers.RoleMapper;
 import single.project.e_commerce.mappers.UserMapper;
-import single.project.e_commerce.models.Address;
 import single.project.e_commerce.models.Role;
 import single.project.e_commerce.models.User;
 import single.project.e_commerce.repositories.AddressRepository;
 import single.project.e_commerce.repositories.RoleRepository;
 import single.project.e_commerce.repositories.UserRepository;
+import single.project.e_commerce.utils.enums.ErrorCode;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,13 +34,13 @@ public class UserService {
 
     public User getUserWithRolesAndPermissions(long userId) {
         return userRepository.findUserWithRoleAndPermission(userId)
-                .orElseThrow(() -> new DataInvalidException("Can't find user!"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
     }
 
 
     public UserResponseDTO saveUser(UserRequestDTO userRequestDTO) {
         if (userRepository.existsByUsername(userRequestDTO.getUsername())) {
-            throw new DataDuplicateException("Username is exist!");
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
         User user = userMapper.toUser(userRequestDTO);
 
@@ -57,7 +52,7 @@ public class UserService {
 
         //set default role
         Role defaultRole = roleRepository.findByName("CUSTOMER")
-                .orElseThrow(() -> new DataInvalidException("Can't find role with suggested name"));
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
         Set<Role> roles = new HashSet<>();
         roles.add(defaultRole);
         user.setRoles(roles);
@@ -72,7 +67,7 @@ public class UserService {
 
     public UserResponseDTO updateUser(Long userId, UserUpdateRequestDTO request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataInvalidException("Can't find user with requested Id"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
 
         // set normal fields
         user.setUsername(request.getUsername());

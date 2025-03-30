@@ -15,6 +15,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import single.project.e_commerce.dto.response.ApiErrorResponse;
+import single.project.e_commerce.utils.enums.ErrorCode;
 
 import java.io.IOException;
 
@@ -37,9 +38,9 @@ public class UrlRegistryFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.OK.value());
             ApiErrorResponse apiResponse = ApiErrorResponse.
                     builder()
-                    .message("Please go on other resources")
-                    .status(HttpStatus.NOT_FOUND.value())
-                    .error("Page not found")
+                    .message(ErrorCode.RESOURCE_NOT_FOUND.getMessage())
+                    .status(ErrorCode.RESOURCE_NOT_FOUND.getCode())
+                    .error(ErrorCode.RESOURCE_NOT_FOUND.name())
                     .path(request.getRequestURI())
                     .build();
             ObjectMapper objectMapper = new ObjectMapper();

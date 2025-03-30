@@ -11,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import single.project.e_commerce.dto.response.ApiErrorResponse;
+import single.project.e_commerce.utils.enums.ErrorCode;
 
 import java.io.IOException;
 
@@ -26,9 +27,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         ApiErrorResponse apiResponse = ApiErrorResponse.
                 builder()
-                .message("You are unauthenticated!")
-                .status(HttpStatus.UNAUTHORIZED.value())
-                .error(authException.getMessage())
+                .message(ErrorCode.UNAUTHORIZED.getMessage())
+                .status(ErrorCode.UNAUTHORIZED.getCode())
+                .error(ErrorCode.UNAUTHORIZED.name())
                 .path(request.getRequestURI())
                 .build();
         ObjectMapper objectMapper = new ObjectMapper();

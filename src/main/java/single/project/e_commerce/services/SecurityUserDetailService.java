@@ -6,10 +6,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import single.project.e_commerce.exceptions.DataInvalidException;
+import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.models.User;
 import single.project.e_commerce.repositories.UserRepository;
 import single.project.e_commerce.configuration.securityModels.SecurityUser;
+import single.project.e_commerce.utils.enums.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class SecurityUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("---------------------loadUserByUsername method start--------------------");
         User user = userRepository.findUserWithRoleAndPermissionByUsername(username)
-                .orElseThrow(() -> new DataInvalidException("There isn't any user with the username " + username));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         return new SecurityUser(user);
     }
 }

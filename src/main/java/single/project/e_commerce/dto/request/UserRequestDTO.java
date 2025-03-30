@@ -3,7 +3,6 @@ package single.project.e_commerce.dto.request;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
-import single.project.e_commerce.models.Address;
 import single.project.e_commerce.utils.annotations.EnumPattern;
 import single.project.e_commerce.utils.enums.Gender;
 import single.project.e_commerce.utils.enums.Status;

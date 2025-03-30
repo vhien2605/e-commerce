@@ -11,9 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-import single.project.e_commerce.exceptions.DataInvalidException;
+import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.configuration.securityModels.SecurityUser;
-import single.project.e_commerce.repositories.TokenRepository;
+import single.project.e_commerce.utils.enums.ErrorCode;
 import single.project.e_commerce.utils.enums.TokenType;
 
 import java.security.Key;
@@ -55,7 +55,6 @@ public class JwtService {
         var claims = extractAllClaim(token, type);  // if signature not match and other invalids -> throw exception
         return !isExpired(token, type) && !isDisable(token, type);
     }
-
 
     public boolean isDisable(String token, TokenType type) {
         if (type.equals(TokenType.ACCESS)) {
@@ -103,7 +102,7 @@ public class JwtService {
         } else if (type.equals(TokenType.RESET)) {
             keyBytes = Decoders.BASE64.decode(resetKey);
         } else {
-            throw new DataInvalidException("token type is invalid");
+            throw new AppException(ErrorCode.TOKEN_TYPE_INVALID);
         }
         return Keys.hmacShaKeyFor(keyBytes);
     }

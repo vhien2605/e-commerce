@@ -1,7 +1,9 @@
 package single.project.e_commerce.exceptions;
 
-public class DataInvalidException extends RuntimeException{
-    public DataInvalidException(String message){
-        super(message);
+import single.project.e_commerce.utils.enums.ErrorCode;
+
+public class DataInvalidException extends RuntimeException {
+    public DataInvalidException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
     }
 }

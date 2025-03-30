@@ -7,12 +7,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import single.project.e_commerce.dto.request.LoginRequestDTO;
 import single.project.e_commerce.dto.response.TokenResponseDTO;
-import single.project.e_commerce.exceptions.AuthenticationException;
+import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.models.RedisToken;
 import single.project.e_commerce.models.Token;
 import single.project.e_commerce.models.User;
 import single.project.e_commerce.repositories.UserRepository;
 import single.project.e_commerce.configuration.securityModels.SecurityUser;
+import single.project.e_commerce.utils.enums.ErrorCode;
 import single.project.e_commerce.utils.enums.TokenType;
 
 import java.util.Date;
@@ -30,9 +31,9 @@ public class AuthenticationService {
     public TokenResponseDTO authenticate(LoginRequestDTO request) {
         User user = userRepository.findUserWithRoleAndPermissionByUsername(
                         request.getUsername())
-                .orElseThrow(() -> new AuthenticationException("Bad Credentials!"));
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new AuthenticationException("Bad Credentials!");
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
         String accessToken = jwtService.generateToken(new SecurityUser(user), TokenType.ACCESS);
         String refreshToken = jwtService.generateToken(new SecurityUser(user), TokenType.REFRESH);
@@ -71,7 +72,7 @@ public class AuthenticationService {
         String username = jwtService.extractUsername(token, type);
         String jti = jwtService.extractId(token, type);
         Date expirationDate = jwtService.extractExpiration(token, type);
-        long timeToLive = (expirationDate.getTime() - System.currentTimeMillis()) / 1000;
+        long timeToLive = (jwtService.extractExpiration(token, type).getTime() - new Date().getTime()) / 1000;
         return RedisToken.builder()
                 .jti(jti)
                 .timeToLive(timeToLive)
