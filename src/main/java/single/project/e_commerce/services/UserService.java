@@ -101,5 +101,4 @@ public class UserService {
         return userRepository.findAllUsersWithRolesAndAddress()
                 .stream().map(userMapper::toResponse).toList();
     }
-    
 }

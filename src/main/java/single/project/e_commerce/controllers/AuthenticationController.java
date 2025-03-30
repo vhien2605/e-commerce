@@ -1,5 +1,6 @@
 package single.project.e_commerce.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -7,16 +8,16 @@ import org.springframework.web.bind.annotation.*;
 import single.project.e_commerce.dto.request.LoginRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
 import single.project.e_commerce.dto.response.ApiSuccessResponse;
-import single.project.e_commerce.repositories.UserRepository;
 import single.project.e_commerce.services.AuthenticationService;
+import single.project.e_commerce.services.RedisTokenService;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Validated
 public class AuthenticationController {
-    private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
+    private final RedisTokenService tokenService;
 
     @PostMapping("/login")
     public ApiResponse login(@RequestBody @Valid LoginRequestDTO request) {
@@ -29,8 +30,12 @@ public class AuthenticationController {
 
 
     @PostMapping("/logout")
-    public String logout() {
-        return "logout";
+    public ApiResponse logout(HttpServletRequest request) {
+        return ApiSuccessResponse.builder()
+                .status(200)
+                .message("Logout")
+                .data(authenticationService.logout(request))
+                .build();
     }
 
 

@@ -55,5 +55,4 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false))
                 .build();
     }
-    
 }

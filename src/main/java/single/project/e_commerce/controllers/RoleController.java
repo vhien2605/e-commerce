@@ -3,6 +3,7 @@ package single.project.e_commerce.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import single.project.e_commerce.dto.request.RoleRequestDTO;
@@ -13,6 +14,7 @@ import single.project.e_commerce.services.RoleService;
 @RestController
 @RequestMapping("/api/role")
 @RequiredArgsConstructor
+@Slf4j
 public class RoleController {
     private final RoleService roleService;
 
@@ -42,9 +44,9 @@ public class RoleController {
     @PreAuthorize("hasAuthority('read_role')")
     public ApiResponse readRole(@RequestBody String name) {
         return ApiSuccessResponse.builder()
-                .data(roleService.getAllPermissionsByRoleName(name))
+                .data(roleService.getAllRolesWithPermissions())
                 .status(200)
-                .message("read role successfully!")
+                .message("read all role successfully!")
                 .build();
     }
 }

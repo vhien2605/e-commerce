@@ -1,4 +1,4 @@
-package single.project.e_commerce.security.services;
+package single.project.e_commerce.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import single.project.e_commerce.exceptions.DataInvalidException;
 import single.project.e_commerce.models.User;
 import single.project.e_commerce.repositories.UserRepository;
-import single.project.e_commerce.security.auth_entities.SecurityUser;
+import single.project.e_commerce.configuration.securityModels.SecurityUser;
 
 @Service
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package single.project.e_commerce.security.filters;
+package single.project.e_commerce.configuration.filters;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

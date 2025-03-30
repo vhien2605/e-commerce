@@ -13,11 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import single.project.e_commerce.security.filters.JwtFilter;
-import single.project.e_commerce.security.filters.UrlRegistryFilter;
-import single.project.e_commerce.security.handlers.CustomAccessDeniedHandler;
-import single.project.e_commerce.security.handlers.CustomAuthenticationEntryPoint;
-import single.project.e_commerce.security.services.SecurityUserDetailService;
+import single.project.e_commerce.configuration.filters.JwtFilter;
+import single.project.e_commerce.configuration.filters.UrlRegistryFilter;
+import single.project.e_commerce.configuration.handlers.CustomAccessDeniedHandler;
+import single.project.e_commerce.configuration.handlers.CustomAuthenticationEntryPoint;
+import single.project.e_commerce.services.SecurityUserDetailService;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,6 +29,9 @@ public class SecurityConfig {
     private final UrlRegistryFilter urlRegistryFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final String[] WHITE_LIST = {
+            "/api/auth/**"
+    };
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,9 +53,8 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         requests -> requests
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/**").authenticated()
-                                .anyRequest().permitAll()
+                                .requestMatchers(WHITE_LIST).permitAll()
+                                .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(urlRegistryFilter, JwtFilter.class)

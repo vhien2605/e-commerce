@@ -3,9 +3,7 @@ package single.project.e_commerce.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import single.project.e_commerce.dto.request.PermissionRequestDTO;
 import single.project.e_commerce.dto.request.RoleRequestDTO;
-import single.project.e_commerce.dto.response.PermissionResponseDTO;
 import single.project.e_commerce.dto.response.RoleResponseDTO;
 import single.project.e_commerce.exceptions.DataDuplicateException;
 import single.project.e_commerce.exceptions.DataInvalidException;
@@ -19,7 +17,6 @@ import single.project.e_commerce.repositories.RoleRepository;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +24,6 @@ public class RoleService {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final RoleMapper roleMapper;
-    private final PermissionMapper permissionMapper;
 
     public RoleResponseDTO createRole(RoleRequestDTO requestDTO) {
         if (roleRepository.existsByName(requestDTO.getName())) {
@@ -70,9 +66,9 @@ public class RoleService {
     }
 
 
-    public List<PermissionResponseDTO> getAllPermissionsByRoleName(String name) {
-        Role role = roleRepository.findRoleWithPermissionsByName(name)
-                .orElseThrow(() -> new DataInvalidException("Can't find role with name input!"));
-        return role.getPermissions().stream().map(permissionMapper::toResponse).toList();
+    public List<RoleResponseDTO> getAllRolesWithPermissions() {
+        return roleRepository.findAllRolesWithPermissions().stream()
+                .map(roleMapper::toResponse)
+                .toList();
     }
 }

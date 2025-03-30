@@ -1,4 +1,4 @@
-package single.project.e_commerce.security.filters;
+package single.project.e_commerce.configuration.filters;
 
 
 import io.jsonwebtoken.JwtException;
@@ -14,8 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import single.project.e_commerce.security.auth_entities.SecurityUser;
-import single.project.e_commerce.security.services.SecurityUserDetailService;
+import single.project.e_commerce.configuration.securityModels.SecurityUser;
+import single.project.e_commerce.services.SecurityUserDetailService;
 import single.project.e_commerce.services.JwtService;
 import single.project.e_commerce.utils.enums.TokenType;
 
