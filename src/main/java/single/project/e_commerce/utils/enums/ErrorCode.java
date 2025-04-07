@@ -17,7 +17,14 @@ public enum ErrorCode {
     ADDRESS_NOT_EXIST(400, "Address not existed", HttpStatus.BAD_REQUEST),
     TOKEN_TYPE_INVALID(400, "Token type is invalid", HttpStatus.BAD_REQUEST),
     REGEX_INVALID(400, "Given regex is invalid", HttpStatus.BAD_REQUEST),
-    RESOURCE_NOT_FOUND(404, "Resource not found", HttpStatus.NOT_FOUND);
+    RESOURCE_NOT_FOUND(404, "Resource not found", HttpStatus.NOT_FOUND),
+    TOKEN_INVALID(401, "Token is invalid", HttpStatus.UNAUTHORIZED),
+    TOKEN_IS_DISABLE(401, "Token is disable", HttpStatus.UNAUTHORIZED),
+    TOKEN_BLACK_LIST(401, "Token is in BlackList", HttpStatus.UNAUTHORIZED),
+    TOKEN_IS_EXPIRED(401, "Token is expired", HttpStatus.UNAUTHORIZED),
+    NEW_PASSWORD_EXISTED(400, "password is existed, please enter other password", HttpStatus.BAD_REQUEST),
+    CONFIRM_PASSWORD_NOT_MATCHED(400, "confirm password does not matched", HttpStatus.BAD_REQUEST);
+
     private final int code;
     private final String message;
     private final HttpStatus httpStatus;

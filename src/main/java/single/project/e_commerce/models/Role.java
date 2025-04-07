@@ -24,7 +24,7 @@ public class Role extends AbstractEntity {
     private long id;
 
     @NotBlank(message = "Role's name must not be blank!")
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

@@ -28,12 +28,12 @@ public class User extends AbstractEntity {
 
     @NotNull(message = "Username must not be null!")
     @Size(min = 4, message = "Username size must be greater than or equal 4!")
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @NotNull(message = "Password must not be null!")
     @Size(min = 4, message = "Password size must be greater than or equal 4!")
-    @Column(name = "password")
+    @Column(name = "password", unique = true)
     private String password;
 
     @NotBlank(message = "Email must not be null!")

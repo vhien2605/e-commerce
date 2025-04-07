@@ -3,9 +3,11 @@ package single.project.e_commerce.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import single.project.e_commerce.dto.request.LoginRequestDTO;
+import single.project.e_commerce.dto.request.ResetPasswordRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
 import single.project.e_commerce.dto.response.ApiSuccessResponse;
 import single.project.e_commerce.services.AuthenticationService;
@@ -22,7 +24,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ApiResponse login(@RequestBody @Valid LoginRequestDTO request) {
         return ApiSuccessResponse.builder()
-                .status(200)
+                .status(HttpStatus.OK.value())
                 .message("Authenticated!")
                 .data(authenticationService.authenticate(request))
                 .build();
@@ -32,7 +34,7 @@ public class AuthenticationController {
     @PostMapping("/logout")
     public ApiResponse logout(HttpServletRequest request) {
         return ApiSuccessResponse.builder()
-                .status(200)
+                .status(HttpStatus.OK.value())
                 .message("Logout")
                 .data(authenticationService.logout(request))
                 .build();
@@ -40,19 +42,28 @@ public class AuthenticationController {
 
 
     @PostMapping("/refresh")
-    public String refresh() {
-        return "refresh";
+    public ApiResponse refresh(HttpServletRequest request) {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("refresh token successfully!")
+                .data(authenticationService.refresh(request))
+                .build();
     }
 
 
     @PostMapping("/forgot-password")
-    public String forgot() {
-        return "forgot";
+    public ApiResponse forgot(HttpServletRequest request) {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("reset token is created successfully")
+                .data(authenticationService.forgot(request))
+                .build();
     }
 
 
-    @PutMapping("/change-password")
-    public String change() {
-        return "password changed";
+    @PatchMapping("/reset-password")
+    public String change(HttpServletRequest request
+            , @RequestBody @Valid ResetPasswordRequestDTO requestDTO) {
+        return authenticationService.reset(request, requestDTO);
     }
 }

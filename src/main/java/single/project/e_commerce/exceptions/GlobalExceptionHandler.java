@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = {AppException.class})
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse dataDuplicateException(AppException e, WebRequest request) {
+    public ApiResponse appException(AppException e, WebRequest request) {
         log.info("---------------------------Application exception handler start---------------------------");
         String error = e.getMessage();
         return ApiErrorResponse.builder()

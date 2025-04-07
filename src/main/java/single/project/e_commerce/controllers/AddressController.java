@@ -2,6 +2,7 @@ package single.project.e_commerce.controllers;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ public class AddressController {
     public ApiResponse getUsersInLocation(@RequestBody AddressRequestDTO request) {
         return ApiSuccessResponse.builder()
                 .data(addressService.getAddressWithUsersByLocation(request))
-                .status(200)
+                .status(HttpStatus.OK.value())
                 .message("Get all users by location successfully!")
                 .build();
     }

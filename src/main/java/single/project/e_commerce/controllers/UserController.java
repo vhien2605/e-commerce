@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +28,7 @@ public class UserController {
     public ApiResponse getAllUser() {
         return ApiSuccessResponse.builder()
                 .data(userService.getAllUsers())
-                .status(200)
+                .status(HttpStatus.OK.value())
                 .message("Get all users successfully!")
                 .build();
     }
@@ -38,7 +39,7 @@ public class UserController {
     public ApiResponse createUser(@RequestBody @Valid UserRequestDTO request) {
         return ApiSuccessResponse.builder()
                 .data(userService.saveUser(request))
-                .status(200)
+                .status(HttpStatus.OK.value())
                 .message("create user successfully")
                 .build();
     }
@@ -51,7 +52,7 @@ public class UserController {
         log.info("start updateUser controller method");
         return ApiSuccessResponse.builder()
                 .data(userService.updateUser(id, updateUserDTO))
-                .status(200)
+                .status(HttpStatus.OK.value())
                 .message("update user successfully")
                 .build();
     }

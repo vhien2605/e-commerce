@@ -32,14 +32,10 @@ public class UserService {
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
 
-    public User getUserWithRolesAndPermissions(long userId) {
-        return userRepository.findUserWithRoleAndPermission(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
-    }
-
-
     public UserResponseDTO saveUser(UserRequestDTO userRequestDTO) {
-        if (userRepository.existsByUsername(userRequestDTO.getUsername())) {
+        if (userRepository.existsByUsername(userRequestDTO.getUsername())
+                || userRepository.existsByEmail(userRequestDTO.getEmail())
+        ) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         User user = userMapper.toUser(userRequestDTO);
@@ -93,7 +89,19 @@ public class UserService {
 
 
     public List<UserResponseDTO> getAllUsers() {
-        return userRepository.findAllUsersWithRolesAndAddress()
+        return userRepository.findAllUsersWithAllReferences()
                 .stream().map(userMapper::toResponse).toList();
+    }
+
+
+    public String changeUserPassword(String username, String password) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            throw new AppException(ErrorCode.NEW_PASSWORD_EXISTED);
+        }
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+        return "changed password successfully!";
     }
 }

@@ -11,12 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query("SELECT u FROM User u " +
-            "JOIN FETCH u.roles r " +
-            "JOIN FETCH r.permissions " +
-            "WHERE u.id=:userId")
-    public Optional<User> findUserWithRoleAndPermission(@Param("userId") Long userId);
-
     public Optional<User> findByUsername(String username);
 
     @Query("SELECT u FROM User u " +
@@ -28,8 +22,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     public boolean existsByUsername(String username);
 
+    public boolean existsByEmail(String email);
+
     @Query("SELECT DISTINCT u FROM User u " +
             "JOIN FETCH u.roles r " +
-            "JOIN FETCH u.address")
-    public List<User> findAllUsersWithRolesAndAddress();
+            "JOIN FETCH u.address a " +
+            "JOIN FETCH r.permissions"
+    )
+    public List<User> findAllUsersWithAllReferences();
 }

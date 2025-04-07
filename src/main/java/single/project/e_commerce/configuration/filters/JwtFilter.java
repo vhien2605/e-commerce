@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import single.project.e_commerce.configuration.securityModels.SecurityUser;
+import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.services.SecurityUserDetailService;
 import single.project.e_commerce.services.JwtService;
 import single.project.e_commerce.utils.enums.TokenType;
@@ -39,17 +40,16 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         String token = authorization.substring("Bearer ".length());
         try {
-            if (jwtService.isValid(token, TokenType.ACCESS)) {
-                log.info("-------------------------start create UserDetails and set in Context---------------------");
-                String username = jwtService.extractUsername(token, TokenType.ACCESS);
-                SecurityUser user = (SecurityUser) securityUserDetailService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        user, null, user.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch (JwtException e) {
-            log.info("-------------------------------------jwt exception--------------------------------");
+            jwtService.validateToken(token, TokenType.ACCESS);
+            log.info("-------------------------start create UserDetails and set in Context---------------------");
+            String username = jwtService.extractUsername(token, TokenType.ACCESS);
+            SecurityUser user = (SecurityUser) securityUserDetailService.loadUserByUsername(username);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    user, null, user.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (JwtException | AppException e) {
+            log.info("-------------------------------------jwt token exception--------------------------------");
             log.info("-------------------------------------" + e.getMessage() + "--------------------------------------");
         }
         filterChain.doFilter(request, response);

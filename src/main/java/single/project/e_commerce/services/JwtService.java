@@ -51,25 +51,32 @@ public class JwtService {
         return generateToken(Map.of("userId", buildScopes(user)), user, type);
     }
 
-    public boolean isValid(String token, TokenType type) {
+    public void validateToken(String token, TokenType type) {
         var claims = extractAllClaim(token, type);  // if signature not match and other invalids -> throw exception
-        return !isExpired(token, type) && !isDisable(token, type);
+        checkExpired(token, type);
+        checkDisable(token, type);
     }
 
-    public boolean isDisable(String token, TokenType type) {
+    public void checkDisable(String token, TokenType type) {
         if (type.equals(TokenType.ACCESS)) {
             String jti = extractId(token, type);
             var redisToken = redisTokenService.findByJti(jti);
-            return redisToken.isPresent();
-        } else {
+            if (redisToken.isPresent()) {
+                throw new AppException(ErrorCode.TOKEN_BLACK_LIST);
+            }
+        } else if (type.equals(TokenType.REFRESH)) {
             String jti = extractId(token, type);
             var dbToken = tokenService.findById(jti);
-            return dbToken.isEmpty();
+            if (dbToken.isEmpty()) {
+                throw new AppException(ErrorCode.TOKEN_IS_DISABLE);
+            }
         }
     }
 
-    public boolean isExpired(String token, TokenType type) {
-        return extractExpiration(token, type).before(new Date());
+    public void checkExpired(String token, TokenType type) {
+        if (extractExpiration(token, type).before(new Date())) {
+            throw new AppException(ErrorCode.TOKEN_IS_EXPIRED);
+        }
     }
 
     private String generateToken(Map<String, Object> claims, SecurityUser user, TokenType type) {
