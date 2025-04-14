@@ -17,7 +17,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Payment {
+public class Payment extends AbstractEntity {
     //    id long [primary key]
 //    order_id long [ref: - orders.id]
 //    user_id long [ref: > users.id]

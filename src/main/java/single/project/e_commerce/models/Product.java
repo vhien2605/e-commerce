@@ -15,7 +15,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Product extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -36,7 +36,7 @@ public class Product {
     @NotBlank(message = "Long description must not be blank")
     @Column(name = "long_desc", columnDefinition = "TEXT")
     private String longDesc;
-    
+
     @Column(name = "image_url")
     private String imageUrl;
 
