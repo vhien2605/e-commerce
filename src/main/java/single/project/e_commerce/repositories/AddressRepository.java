@@ -18,13 +18,12 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
                                            @Param("city") String city,
                                            @Param("country") String country);
 
-
-    @Query("SELECT a FROM Address a " +
-            "JOIN FETCH a.users user " +
-            "JOIN FETCH user.roles " +
-            "WHERE LOWER(a.name) = LOWER(:name) " +
-            "AND LOWER(a.city) = LOWER(:city) " +
-            "AND LOWER(a.country) = LOWER(:country)")
+    
+    @EntityGraph(attributePaths = {
+            "users",
+            "users.roles"
+    })
+    @Query("SELECT a FROM Address a WHERE LOWER(a.name) = LOWER(:name) AND LOWER(a.city) = LOWER(:city) AND LOWER(a.country) = LOWER(:country)")
     Optional<Address> getAddressWithUsersAndRoles(@Param("name") String name,
                                                   @Param("city") String city,
                                                   @Param("country") String country);

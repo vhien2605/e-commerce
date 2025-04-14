@@ -62,4 +62,14 @@ public class User extends AbstractEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
+
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Cart cart;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Review> reviews;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Payment> payments;
 }

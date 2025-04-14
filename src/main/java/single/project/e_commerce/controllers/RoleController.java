@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import single.project.e_commerce.dto.request.RoleRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
@@ -16,11 +16,11 @@ import single.project.e_commerce.services.RoleService;
 @RequestMapping("/api/role")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class RoleController {
     private final RoleService roleService;
 
     @PostMapping("/")
-    @PreAuthorize("hasAuthority('create_role')")
     public ApiResponse createRole(@RequestBody @Valid RoleRequestDTO requestDTO) {
         return ApiSuccessResponse.builder()
                 .data(roleService.createRole(requestDTO))
@@ -30,7 +30,6 @@ public class RoleController {
     }
 
     @PatchMapping("/update/{roleId}")
-    @PreAuthorize("hasAuthority('update_role')")
     public ApiResponse createRole(@PathVariable Long roleId
             , @RequestBody @Valid RoleRequestDTO dto) {
         return ApiSuccessResponse.builder()
@@ -42,7 +41,6 @@ public class RoleController {
 
 
     @GetMapping("/")
-    @PreAuthorize("hasAuthority('read_role')")
     public ApiResponse readRole(@RequestBody String name) {
         return ApiSuccessResponse.builder()
                 .data(roleService.getAllRolesWithPermissions())

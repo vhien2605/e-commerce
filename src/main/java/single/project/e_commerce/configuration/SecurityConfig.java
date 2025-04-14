@@ -33,6 +33,11 @@ public class SecurityConfig {
             "/api/auth/**"
     };
 
+    private final String[] SYSTEM_ADMIN_LIST = {
+            "/api/role/**",
+            "/api/user/**"
+    };
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -54,6 +59,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         requests -> requests
                                 .requestMatchers(WHITE_LIST).permitAll()
+                                .requestMatchers(SYSTEM_ADMIN_LIST).hasRole("SYSTEM_ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

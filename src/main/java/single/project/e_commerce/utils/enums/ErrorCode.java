@@ -23,7 +23,9 @@ public enum ErrorCode {
     TOKEN_BLACK_LIST(401, "Token is in BlackList", HttpStatus.UNAUTHORIZED),
     TOKEN_IS_EXPIRED(401, "Token is expired", HttpStatus.UNAUTHORIZED),
     NEW_PASSWORD_EXISTED(400, "password is existed, please enter other password", HttpStatus.BAD_REQUEST),
-    CONFIRM_PASSWORD_NOT_MATCHED(400, "confirm password does not matched", HttpStatus.BAD_REQUEST);
+    CONFIRM_PASSWORD_NOT_MATCHED(400, "confirm password does not matched", HttpStatus.BAD_REQUEST),
+    JSON_INVALID(400, "input json is invalid", HttpStatus.BAD_REQUEST),
+    FILE_IO_ERROR(400, "io file exception", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;

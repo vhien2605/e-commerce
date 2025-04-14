@@ -24,7 +24,6 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/")
-    @PreAuthorize("hasAuthority('read_user')")
     public ApiResponse getAllUser() {
         return ApiSuccessResponse.builder()
                 .data(userService.getAllUsers())
@@ -35,7 +34,6 @@ public class UserController {
 
 
     @PostMapping("/")
-    @PreAuthorize("hasAuthority('create_user')")
     public ApiResponse createUser(@RequestBody @Valid UserRequestDTO request) {
         return ApiSuccessResponse.builder()
                 .data(userService.saveUser(request))
@@ -46,7 +44,6 @@ public class UserController {
 
 
     @PatchMapping("/update/{id}")
-    @PreAuthorize("hasAuthority('update_user')")
     public ApiResponse updateUser(@PathVariable @Min(value = 1, message = "userId must be greater than or equals 1") Long id,
                                   @RequestBody @Valid UserUpdateRequestDTO updateUserDTO) {
         log.info("start updateUser controller method");

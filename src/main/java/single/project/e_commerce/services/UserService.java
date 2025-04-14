@@ -10,6 +10,7 @@ import single.project.e_commerce.dto.response.UserResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.mappers.AddressMapper;
 import single.project.e_commerce.mappers.UserMapper;
+import single.project.e_commerce.models.Cart;
 import single.project.e_commerce.models.Role;
 import single.project.e_commerce.models.User;
 import single.project.e_commerce.repositories.AddressRepository;
@@ -52,6 +53,12 @@ public class UserService {
         Set<Role> roles = new HashSet<>();
         roles.add(defaultRole);
         user.setRoles(roles);
+
+
+        //set cart
+        Cart cart = new Cart();
+        user.setCart(cart);
+        cart.setUser(user);
 
         //set password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
