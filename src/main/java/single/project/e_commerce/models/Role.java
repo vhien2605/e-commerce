@@ -27,6 +27,7 @@ public class Role extends AbstractEntity {
     @Column(name = "name", unique = true)
     private String name;
 
+    
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "roles_permissions"
             , joinColumns = @JoinColumn(name = "role_id")

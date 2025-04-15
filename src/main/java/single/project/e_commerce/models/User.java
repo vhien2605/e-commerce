@@ -72,4 +72,8 @@ public class User extends AbstractEntity {
 
     @OneToMany(mappedBy = "user")
     private Set<Payment> payments;
+
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Shop shop;
 }

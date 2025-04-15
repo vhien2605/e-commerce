@@ -45,4 +45,9 @@ public class Order extends AbstractEntity {
 
     @OneToOne(mappedBy = "order")
     private Payment payment;
+
+
+    @OneToOne
+    @JoinColumn(name = "shipment_id")
+    private Shipment shipment;
 }

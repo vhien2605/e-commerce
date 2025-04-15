@@ -2,6 +2,7 @@ package single.project.e_commerce.models;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -18,13 +19,16 @@ public class Review extends AbstractEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-
     @Column(name = "rate")
     @NotNull(message = "this must be required")
     private int rate;
+
     @Column(name = "title")
+    @NotBlank(message = "title field must not be blank")
     private String title;
+
     @Column(name = "description", columnDefinition = "TEXT")
+    @NotBlank(message = "description must not be blank")
     private String description;
 
     @ManyToOne

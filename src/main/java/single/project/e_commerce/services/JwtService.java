@@ -28,7 +28,6 @@ import java.util.function.Function;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtService {
-
     @Value("${security.jwt.access.timeout}")
     private long accessTimeOut;
     @Value("${security.jwt.refresh.timeout}")

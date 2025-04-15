@@ -25,7 +25,9 @@ public enum ErrorCode {
     NEW_PASSWORD_EXISTED(400, "password is existed, please enter other password", HttpStatus.BAD_REQUEST),
     CONFIRM_PASSWORD_NOT_MATCHED(400, "confirm password does not matched", HttpStatus.BAD_REQUEST),
     JSON_INVALID(400, "input json is invalid", HttpStatus.BAD_REQUEST),
-    FILE_IO_ERROR(400, "io file exception", HttpStatus.BAD_REQUEST);
+    FILE_STORAGE_SERVICE_UNAVAILABLE(503, "sub service of system is unavailable", HttpStatus.SERVICE_UNAVAILABLE),
+    PRODUCT_NOT_EXIST(400, "product is not exist", HttpStatus.BAD_REQUEST),
+    REVIEW_NOT_EXIST(400, "review is not exist", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;

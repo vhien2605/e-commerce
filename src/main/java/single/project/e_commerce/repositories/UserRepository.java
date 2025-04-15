@@ -14,7 +14,9 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = {
             "cart",
-            "address"
+            "address",
+            "shop",
+            "roles"
     })
     public Optional<User> findByUsername(String username);
 
@@ -22,7 +24,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "roles",
             "roles.permissions",
             "address",
-            "cart"
+            "cart",
+            "shop"
     })
     @Query("SELECT u From User u WHERE u.username=:username")
     Optional<User> findUserWithRoleAndPermissionByUsername(@Param("username") String username);
@@ -36,7 +39,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "roles",
             "roles.permissions",
             "address",
-            "cart"
+            "cart",
+            "shop"
     })
     @Query("SELECT u FROM User u")
     public List<User> findAllUsersWithAllReferences();

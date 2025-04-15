@@ -60,4 +60,8 @@ public class Product extends AbstractEntity {
 
     @OneToMany(mappedBy = "product")
     private Set<OrderDetail> orderDetails;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
 }

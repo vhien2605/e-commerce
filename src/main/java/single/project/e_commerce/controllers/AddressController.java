@@ -21,7 +21,7 @@ import single.project.e_commerce.services.AddressService;
 @Validated
 public class AddressController {
     private final AddressService addressService;
-
+    
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('read_user')")
     public ApiResponse getUsersInLocation(@RequestBody AddressRequestDTO request) {
