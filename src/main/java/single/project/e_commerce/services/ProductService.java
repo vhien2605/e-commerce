@@ -84,9 +84,6 @@ public class ProductService {
             product.setImageUrl(fileUrl);
             product.setSoldQuantity(0);
 
-            //setter products
-            shop.getProducts().add(product);
-
             return productMapper.toResponse(productRepository.save(product));
         } catch (IOException e) {
             throw new AppException(ErrorCode.FILE_STORAGE_SERVICE_UNAVAILABLE);
@@ -100,7 +97,6 @@ public class ProductService {
         String username = GlobalMethod.extractUserFromContext();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
-
         Product product = productRepository.findById(prodId)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXIST));
 
@@ -158,7 +154,14 @@ public class ProductService {
         List<Product> products = productRepository.findAll();
         return products.stream().map(productMapper::toResponse).toList();
     }
-    
+
+
+    public List<ProductResponseDTO> getMyProducts() {
+        String username = GlobalMethod.extractUserFromContext();
+        List<Product> products = productRepository.findProductsByUsername(username);
+        return products.stream().map(productMapper::toResponse).toList();
+    }
+
     public ProductDetailResponseDTO productDetail(long id) {
         Product product = productRepository.findByIdWithReviews(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXIST));

@@ -25,6 +25,40 @@ public class ProductController {
     private final ProductService productService;
     private final ObjectMapper objectMapper;
 
+
+    @GetMapping("/")
+    @PreAuthorize("hasAuthority('read_product')")
+    public ApiResponse getAllProducts() {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("read product successfully")
+                .data(productService.getAllProducts())
+                .build();
+    }
+
+
+    @GetMapping("/my-products")
+    @PreAuthorize("hasRole('SELLER') OR hasRole('ADMIN')")
+    public ApiResponse getMyProducts() {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("read owned product successfully")
+                .data(productService.getMyProducts())
+                .build();
+    }
+
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('read_product')")
+    public ApiResponse productDetail(@PathVariable("id") Long id) {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("read detail information product successfully")
+                .data(productService.productDetail(id))
+                .build();
+    }
+
+
     @PostMapping("/")
     @PreAuthorize("hasAuthority('create_product')")
     public ApiResponse createProduct(@RequestParam("data") String data,
@@ -42,8 +76,8 @@ public class ProductController {
     }
 
 
-    @PatchMapping("/{id}")
-    @PreAuthorize("hasAuthority('create_product')")
+    @PatchMapping("/{id}/update")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('SELLER')")
     public ApiResponse updateProduct(@PathVariable("id") Long id,
                                      @RequestParam("data") String data,
                                      @RequestParam("file") MultipartFile file) {
@@ -57,26 +91,5 @@ public class ProductController {
         } catch (JsonProcessingException e) {
             throw new AppException(ErrorCode.JSON_INVALID);
         }
-    }
-
-
-    @GetMapping("/")
-    @PreAuthorize("hasAuthority('read_product')")
-    public ApiResponse getAllProducts() {
-        return ApiSuccessResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message("read product successfully")
-                .data(productService.getAllProducts())
-                .build();
-    }
-
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('read_product')")
-    public ApiResponse productDetail(@PathVariable("id") Long id) {
-        return ApiSuccessResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message("read detail information product successfully")
-                .data(productService.productDetail(id))
-                .build();
     }
 }
