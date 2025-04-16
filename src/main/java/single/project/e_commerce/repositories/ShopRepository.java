@@ -15,7 +15,9 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     @Override
     @EntityGraph(attributePaths = {
             "user",
-            "user.address"
+            "user.address",
+            "user.cart",
+            "user.shop"
     })
     Optional<Shop> findById(Long id);
 
@@ -23,13 +25,17 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     @Override
     @EntityGraph(attributePaths = {
             "user",
-            "user.address"
+            "user.address",
+            "user.cart",
+            "user.shop"
     })
     List<Shop> findAll();
 
     @EntityGraph(attributePaths = {
             "user",
-            "user.address"
+            "user.address",
+            "user.cart",
+            "user.shop"
     })
     @Query("SELECT s FROM Shop s INNER JOIN s.user u WHERE u.username=:username")
     Optional<Shop> findByUsername(@Param("username") String username);
