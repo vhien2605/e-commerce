@@ -34,4 +34,8 @@ public class Shop extends AbstractEntity {
 
     @OneToMany(mappedBy = "shop")
     private Set<Product> products;
+
+
+    @OneToMany(mappedBy = "shop")
+    private Set<Shipment> shipments;
 }

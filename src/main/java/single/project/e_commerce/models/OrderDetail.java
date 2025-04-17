@@ -33,4 +33,8 @@ public class OrderDetail extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
+
+    @OneToOne(mappedBy = "orderDetail")
+    private Shipment shipment;
 }

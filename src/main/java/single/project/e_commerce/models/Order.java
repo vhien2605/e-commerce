@@ -26,6 +26,15 @@ public class Order extends AbstractEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+
+    @Column(name = "receiver_address")
+    @NotBlank(message = "receiver address must be required")
+    private String receiverAddress;
+
+    @Column(name = "receiver_number")
+    @NotBlank(message = "receiver number must be required")
+    private String receiverNumber;
+
     @Column(name = "total_price")
     @Min(value = 0, message = "value must be greater than 0")
     private double totalPrice;
@@ -41,13 +50,7 @@ public class Order extends AbstractEntity {
 
     @OneToMany(mappedBy = "order")
     private Set<OrderDetail> orderDetails;
-
-
+    
     @OneToOne(mappedBy = "order")
     private Payment payment;
-
-
-    @OneToOne
-    @JoinColumn(name = "shipment_id")
-    private Shipment shipment;
 }

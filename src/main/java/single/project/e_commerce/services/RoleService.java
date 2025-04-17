@@ -3,19 +3,30 @@ package single.project.e_commerce.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import single.project.e_commerce.dto.request.RoleRequestDTO;
+import single.project.e_commerce.dto.request.ShopRequestDTO;
 import single.project.e_commerce.dto.response.RoleResponseDTO;
+import single.project.e_commerce.dto.response.UserResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.mappers.RoleMapper;
+import single.project.e_commerce.mappers.ShopMapper;
+import single.project.e_commerce.mappers.UserMapper;
 import single.project.e_commerce.models.Permission;
 import single.project.e_commerce.models.Role;
+import single.project.e_commerce.models.Shop;
+import single.project.e_commerce.models.User;
 import single.project.e_commerce.repositories.PermissionRepository;
 import single.project.e_commerce.repositories.RoleRepository;
+import single.project.e_commerce.repositories.ShopRepository;
+import single.project.e_commerce.repositories.UserRepository;
+import single.project.e_commerce.utils.commons.GlobalMethod;
 import single.project.e_commerce.utils.enums.ErrorCode;
 
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -70,4 +81,6 @@ public class RoleService {
                 .map(roleMapper::toResponse)
                 .toList();
     }
+
+
 }

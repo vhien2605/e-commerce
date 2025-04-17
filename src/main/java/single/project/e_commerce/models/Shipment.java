@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import single.project.e_commerce.utils.annotations.EnumPattern;
+import single.project.e_commerce.utils.enums.ShippingStatus;
 
 
 import java.util.Date;
@@ -27,20 +29,29 @@ public class Shipment extends AbstractEntity {
     @Column(name = "tracking_id")
     private String trackingId;
 
-    @NotBlank(message = "shipping vehicle must not be blank")
-    @Column(name = "shipping_vehicle")
-    private String shippingVehicle;
+    @Column(name = "receiver_address")
+    @NotBlank(message = "receiver address must be required")
+    private String receiverAddress;
+
+    @Column(name = "receiver_number")
+    @NotBlank(message = "receiver number must be required")
+    private String receiverNumber;
 
     @NotBlank(message = "shipping status must not be blank")
     @Column(name = "shipping_status")
-    private String shippingStatus;
-
+    @EnumPattern(name = "shippingStatus", regexp = "SHIPPED|SHIPPING")
+    private ShippingStatus shippingStatus;
 
     @Column(name = "delivered_at")
     @JsonFormat(pattern = "dd/MM/yyyy")
     @NotNull(message = "Date is required")
     private Date deliveredAt;
 
-    @OneToOne(mappedBy = "shipment")
-    private Order order;
+    @OneToOne
+    @JoinColumn(name = "order_detail_id")
+    private OrderDetail orderDetail;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
 }

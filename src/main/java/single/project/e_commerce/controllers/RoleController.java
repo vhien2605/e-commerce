@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import single.project.e_commerce.dto.request.RoleRequestDTO;
+import single.project.e_commerce.dto.request.ShopRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
 import single.project.e_commerce.dto.response.ApiSuccessResponse;
 import single.project.e_commerce.services.RoleService;
@@ -19,6 +20,7 @@ import single.project.e_commerce.services.RoleService;
 @Validated
 public class RoleController {
     private final RoleService roleService;
+
 
     @PostMapping("/")
     public ApiResponse createRole(@RequestBody @Valid RoleRequestDTO requestDTO) {

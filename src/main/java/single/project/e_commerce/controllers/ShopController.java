@@ -1,11 +1,13 @@
 package single.project.e_commerce.controllers;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import single.project.e_commerce.dto.request.ShopRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
 import single.project.e_commerce.dto.response.ApiSuccessResponse;
 import single.project.e_commerce.dto.response.ShopInformationResponseDTO;
@@ -17,6 +19,15 @@ import single.project.e_commerce.services.ShopService;
 @Validated
 public class ShopController {
     private final ShopService shopService;
+
+    @PostMapping("/register-shop")
+    public ApiResponse registerShop(@RequestBody @Valid ShopRequestDTO dto) {
+        return ApiSuccessResponse.builder()
+                .data(shopService.registerShop(dto))
+                .status(HttpStatus.OK.value())
+                .message("register shop successfully!, now you became a seller, please check your shop information again")
+                .build();
+    }
 
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")

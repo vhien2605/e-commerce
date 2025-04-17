@@ -28,7 +28,8 @@ public enum ErrorCode {
     FILE_STORAGE_SERVICE_UNAVAILABLE(503, "sub service of system is unavailable", HttpStatus.SERVICE_UNAVAILABLE),
     PRODUCT_NOT_EXIST(400, "product is not exist", HttpStatus.BAD_REQUEST),
     REVIEW_NOT_EXIST(400, "review is not exist", HttpStatus.BAD_REQUEST),
-    SHOP_NOT_EXIST(400, "shop with owned user's username is not exist", HttpStatus.BAD_REQUEST);
+    SHOP_NOT_EXIST(400, "shop with owned user's username is not exist", HttpStatus.BAD_REQUEST),
+    SELLER_REGISTERED(400, "you are already a seller", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;
