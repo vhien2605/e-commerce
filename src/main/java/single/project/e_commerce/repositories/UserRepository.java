@@ -61,13 +61,23 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Override
     public List<User> findAll(Specification<User> specification, Sort sort);
 
+    // to avoid pageable in memory problem
+    // not fetch collection
     @EntityGraph(attributePaths = {
-            "roles",
-            "roles.permissions",
             "address",
             "cart",
             "shop"
     })
     @Override
     public Page<User> findAll(Specification<User> specification, Pageable pageable);
+    
+    @EntityGraph(attributePaths = {
+            "address",
+            "cart",
+            "shop",
+            "roles",
+            "roles.permissions"
+    })
+    @Query("SELECT u FROM User u WHERE u.id IN :ids")
+    public List<User> findAllUsersWithId(@Param("ids") List<Long> id);
 }

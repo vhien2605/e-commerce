@@ -28,12 +28,11 @@ import single.project.e_commerce.repositories.specifications.SpecificationBuilde
 import single.project.e_commerce.utils.commons.AppConst;
 import single.project.e_commerce.utils.enums.ErrorCode;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -171,8 +170,16 @@ public class UserService {
                 pageable.getPageSize(),
                 sort);
 
+        //get page response when not fetching collection yet
         Page<User> users = userRepository.findAll(specification, sortedPageable);
-        List<UserResponseDTO> result = users.stream()
+        List<Long> orderedIds = users.stream().map(User::getId).toList();
+        // fetching collection in the second query
+        List<User> afterFetchedUsers = userRepository.findAllUsersWithId(orderedIds);
+        Map<Long, User> userByIdMap = afterFetchedUsers.stream()
+                .collect(Collectors.toMap(User::getId, Function.identity()));
+
+        List<UserResponseDTO> result = orderedIds.stream()
+                .map(userByIdMap::get)
                 .map(userMapper::toResponse)
                 .toList();
         return PageResponseDTO.builder()
