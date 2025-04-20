@@ -1,5 +1,8 @@
 package single.project.e_commerce.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,6 +38,8 @@ public interface AddressRepository extends JpaRepository<Address, Long>, JpaSpec
     @Override
     public List<Address> findAll();
 
-   
-    public List<Address> findAll(Specification<Address> specification);
+
+    public List<Address> findAll(Specification<Address> specification, Sort sort);
+
+    public Page<Address> findAll(Specification<Address> specification, Pageable pageable);
 }

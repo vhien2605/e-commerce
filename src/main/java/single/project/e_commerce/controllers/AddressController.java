@@ -41,12 +41,25 @@ public class AddressController {
                 .build();
     }
 
-    @GetMapping("/all-addresses/advanced-search")
+    @GetMapping("/all-addresses/advanced-filter")
     public ApiResponse advancedFilterAddress(
             Pageable pageable,
-            @RequestParam(name = "address", required = false) String[] address) {
+            @RequestParam(name = "address", required = false) String[] address,
+            @RequestParam(name = "sortBy", defaultValue = "id:asc") String[] sortBy) {
         return ApiSuccessResponse.builder()
-                .data(addressService.getAllAddressByFilterSpecification(pageable, address))
+                .data(addressService.getAllAddressByFilterSpecification(pageable, address, sortBy))
+                .status(HttpStatus.OK.value())
+                .message("Get filtered addresses successfully!")
+                .build();
+    }
+
+    @GetMapping("all-addresses/filter")
+    public ApiResponse advancedFilter(
+            @RequestParam(name = "address", required = false) String[] address,
+            @RequestParam(name = "sortBy", defaultValue = "id:asc") String[] sortBy
+    ) {
+        return ApiSuccessResponse.builder()
+                .data(addressService.getAllAddressBySpecificationNotPagination(address, sortBy))
                 .status(HttpStatus.OK.value())
                 .message("Get filtered addresses successfully!")
                 .build();
