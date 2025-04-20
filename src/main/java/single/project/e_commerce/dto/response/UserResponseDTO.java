@@ -13,6 +13,7 @@ import java.util.Set;
 @Builder
 public class UserResponseDTO implements Serializable {
     private long id;
+    private String fullName;
     private String username;
     private String email;
     private Gender gender;

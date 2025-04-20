@@ -4,6 +4,7 @@ package single.project.e_commerce.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import single.project.e_commerce.repositories.specifications.SupportsSpecification;
 
 import java.util.Set;
 
@@ -15,7 +16,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "addresses")
-public class Address extends AbstractEntity {
+public class Address extends AbstractEntity implements SupportsSpecification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

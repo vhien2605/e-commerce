@@ -6,13 +6,11 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-
 @Setter
 @Getter
 @Builder
-public class OwnedShopInformationDTO implements Serializable {
-    private long id;
-    private String fullName;
-    private String username;
-    private String email;
+public class AddressFilterResponseDTO implements Serializable {
+    private String name;
+    private String city;
+    private String country;
 }

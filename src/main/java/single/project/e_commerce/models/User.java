@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import single.project.e_commerce.repositories.specifications.SupportsSpecification;
 import single.project.e_commerce.utils.annotations.EnumPattern;
 import single.project.e_commerce.utils.enums.Gender;
 import single.project.e_commerce.utils.enums.Status;
@@ -20,11 +21,15 @@ import java.util.Set;
 @Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends AbstractEntity {
+public class User extends AbstractEntity implements SupportsSpecification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
+
+    @Column(name = "full_name")
+    @NotBlank(message = "full name must not be blank")
+    private String fullName;
 
     @NotNull(message = "Username must not be null!")
     @Size(min = 4, message = "Username size must be greater than or equal 4!")

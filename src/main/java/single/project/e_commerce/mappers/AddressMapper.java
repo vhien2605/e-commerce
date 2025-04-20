@@ -3,6 +3,7 @@ package single.project.e_commerce.mappers;
 
 import org.mapstruct.Mapper;
 import single.project.e_commerce.dto.request.AddressRequestDTO;
+import single.project.e_commerce.dto.response.AddressFilterResponseDTO;
 import single.project.e_commerce.dto.response.AddressResponseDTO;
 import single.project.e_commerce.models.Address;
 
@@ -11,4 +12,6 @@ public interface AddressMapper {
     Address toAddress(AddressRequestDTO dto);
 
     AddressResponseDTO toResponse(Address address);
+
+    AddressFilterResponseDTO toResponse2(Address address);
 }

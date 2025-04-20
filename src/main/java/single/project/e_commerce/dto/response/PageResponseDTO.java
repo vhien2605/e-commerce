@@ -10,9 +10,9 @@ import java.io.Serializable;
 @Setter
 @Getter
 @Builder
-public class OwnedShopInformationDTO implements Serializable {
-    private long id;
-    private String fullName;
-    private String username;
-    private String email;
+public class PageResponseDTO<T> implements Serializable {
+    private int pageNo;
+    private int pageSize;
+    private int totalPage;
+    private T data;
 }

@@ -1,7 +1,11 @@
 package single.project.e_commerce.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     @EntityGraph(attributePaths = {
             "cart",
             "address",
@@ -19,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "roles"
     })
     public Optional<User> findByUsername(String username);
-    
+
     @EntityGraph(attributePaths = {
             "roles",
             "roles.permissions",
@@ -44,4 +48,25 @@ public interface UserRepository extends JpaRepository<User, Long> {
     })
     @Query("SELECT u FROM User u")
     public List<User> findAllUsersWithAllReferences();
+
+
+    @EntityGraph(attributePaths = {
+            "roles",
+            "roles.permissions",
+            "address",
+            "cart",
+            "shop"
+    })
+    @Override
+    public List<User> findAll(Specification<User> specification);
+
+    @EntityGraph(attributePaths = {
+            "roles",
+            "roles.permissions",
+            "address",
+            "cart",
+            "shop"
+    })
+    @Override
+    public Page<User> findAll(Specification<User> specification, Pageable pageable);
 }

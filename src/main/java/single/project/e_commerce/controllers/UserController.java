@@ -2,8 +2,10 @@ package single.project.e_commerce.controllers;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +16,7 @@ import single.project.e_commerce.dto.request.UserUpdateRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
 import single.project.e_commerce.dto.response.ApiSuccessResponse;
 import single.project.e_commerce.services.UserService;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -27,6 +30,27 @@ public class UserController {
     public ApiResponse getAllUser() {
         return ApiSuccessResponse.builder()
                 .data(userService.getAllUsers())
+                .status(HttpStatus.OK.value())
+                .message("Get all users successfully!")
+                .build();
+    }
+
+
+    @GetMapping("/advanced-filter")
+    public ApiResponse getAllUsersByAdvancedFilterAndPagination(
+            Pageable pageable,
+            @RequestParam(name = "user", required = false) String[] user) {
+        return ApiSuccessResponse.builder()
+                .data(userService.getAllUsersAdvancedFilterAndPagination(pageable, user))
+                .status(HttpStatus.OK.value())
+                .message("Get all users successfully!")
+                .build();
+    }
+
+    @GetMapping("/filter")
+    public ApiResponse getAllUsersByAdvancedFilter(@RequestParam(name = "user", required = false) String[] user) {
+        return ApiSuccessResponse.builder()
+                .data(userService.getAllUsersAdvancedFilter(user))
                 .status(HttpStatus.OK.value())
                 .message("Get all users successfully!")
                 .build();
@@ -53,6 +77,6 @@ public class UserController {
                 .message("update user successfully")
                 .build();
     }
-    
+
 
 }

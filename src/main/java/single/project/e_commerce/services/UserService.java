@@ -2,25 +2,34 @@ package single.project.e_commerce.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import single.project.e_commerce.dto.request.UserRequestDTO;
 import single.project.e_commerce.dto.request.UserUpdateRequestDTO;
+import single.project.e_commerce.dto.response.PageResponseDTO;
 import single.project.e_commerce.dto.response.UserResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.mappers.AddressMapper;
 import single.project.e_commerce.mappers.UserMapper;
+import single.project.e_commerce.models.Address;
 import single.project.e_commerce.models.Cart;
 import single.project.e_commerce.models.Role;
 import single.project.e_commerce.models.User;
 import single.project.e_commerce.repositories.AddressRepository;
 import single.project.e_commerce.repositories.RoleRepository;
 import single.project.e_commerce.repositories.UserRepository;
+import single.project.e_commerce.repositories.specifications.SpecificationBuilder;
+import single.project.e_commerce.utils.commons.AppConst;
 import single.project.e_commerce.utils.enums.ErrorCode;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -98,6 +107,45 @@ public class UserService {
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAllUsersWithAllReferences()
                 .stream().map(userMapper::toResponse).toList();
+    }
+
+    public List<UserResponseDTO> getAllUsersAdvancedFilter(String[] user) {
+        SpecificationBuilder<User> builder = new SpecificationBuilder<>();
+        Pattern pattern = Pattern.compile(AppConst.SEARCH_SPEC_OPERATOR);
+        for (String s : user) {
+            Matcher matcher = pattern.matcher(s);
+            if (matcher.find()) {
+                builder.with(matcher.group(1), matcher.group(2), matcher.group(3),
+                        matcher.group(4), matcher.group(5), matcher.group(6));
+            }
+        }
+        Specification<User> specification = builder.build();
+        return userRepository.findAll(specification).stream()
+                .map(userMapper::toResponse)
+                .toList();
+    }
+
+    public PageResponseDTO<?> getAllUsersAdvancedFilterAndPagination(Pageable pageable, String[] user) {
+        SpecificationBuilder<User> builder = new SpecificationBuilder<>();
+        Pattern pattern = Pattern.compile(AppConst.SEARCH_SPEC_OPERATOR);
+        for (String s : user) {
+            Matcher matcher = pattern.matcher(s);
+            if (matcher.find()) {
+                builder.with(matcher.group(1), matcher.group(2), matcher.group(3),
+                        matcher.group(4), matcher.group(5), matcher.group(6));
+            }
+        }
+        Specification<User> specification = builder.build();
+        Page<User> users = userRepository.findAll(specification, pageable);
+        List<UserResponseDTO> result = users.stream()
+                .map(userMapper::toResponse)
+                .toList();
+        return PageResponseDTO.builder()
+                .data(result)
+                .pageNo(pageable.getPageNumber())
+                .pageSize(pageable.getPageSize())
+                .totalPage(users.getTotalPages())
+                .build();
     }
 
 

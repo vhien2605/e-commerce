@@ -1,5 +1,6 @@
 package single.project.e_commerce.dto.request;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +20,11 @@ import java.util.Set;
 @Getter
 @Builder
 public class UserUpdateRequestDTO implements Serializable {
+
+
+    @NotBlank(message = "full name must not be blank")
+    private String fullName;
+
     @NotNull(message = "Username must not be null!")
     @Size(min = 4, message = "Username size must be greater than or equal 4!")
     private String username;
