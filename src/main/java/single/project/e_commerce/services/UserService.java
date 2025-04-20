@@ -1,9 +1,12 @@
 package single.project.e_commerce.services;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ import single.project.e_commerce.repositories.specifications.SpecificationBuilde
 import single.project.e_commerce.utils.commons.AppConst;
 import single.project.e_commerce.utils.enums.ErrorCode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -109,9 +113,10 @@ public class UserService {
                 .stream().map(userMapper::toResponse).toList();
     }
 
-    public List<UserResponseDTO> getAllUsersAdvancedFilter(String[] user) {
+    public List<UserResponseDTO> getAllUsersAdvancedFilter(String[] user, String[] sortBy) {
         SpecificationBuilder<User> builder = new SpecificationBuilder<>();
         Pattern pattern = Pattern.compile(AppConst.SEARCH_SPEC_OPERATOR);
+        Pattern sortPattern = Pattern.compile(AppConst.SORT_BY);
         for (String s : user) {
             Matcher matcher = pattern.matcher(s);
             if (matcher.find()) {
@@ -119,15 +124,27 @@ public class UserService {
                         matcher.group(4), matcher.group(5), matcher.group(6));
             }
         }
+        List<Sort.Order> sortOrders = new ArrayList<>();
+        for (String sb : sortBy) {
+            Matcher sortMatcher = sortPattern.matcher(sb);
+            if (sortMatcher.find()) {
+                String field = sortMatcher.group(1);
+                String value = sortMatcher.group(3);
+                Sort.Direction direction = (value.equalsIgnoreCase("ASC")) ? Sort.Direction.ASC : Sort.Direction.DESC;
+                sortOrders.add(new Sort.Order(direction, field));
+            }
+        }
+        Sort sort = Sort.by(sortOrders);
         Specification<User> specification = builder.build();
-        return userRepository.findAll(specification).stream()
+        return userRepository.findAll(specification, sort).stream()
                 .map(userMapper::toResponse)
                 .toList();
     }
 
-    public PageResponseDTO<?> getAllUsersAdvancedFilterAndPagination(Pageable pageable, String[] user) {
+    public PageResponseDTO<?> getAllUsersAdvancedFilterAndPagination(Pageable pageable, String[] user, String[] sortBy) {
         SpecificationBuilder<User> builder = new SpecificationBuilder<>();
         Pattern pattern = Pattern.compile(AppConst.SEARCH_SPEC_OPERATOR);
+        Pattern sortPattern = Pattern.compile(AppConst.SORT_BY);
         for (String s : user) {
             Matcher matcher = pattern.matcher(s);
             if (matcher.find()) {
@@ -136,7 +153,25 @@ public class UserService {
             }
         }
         Specification<User> specification = builder.build();
-        Page<User> users = userRepository.findAll(specification, pageable);
+
+
+        List<Sort.Order> sortOrders = new ArrayList<>();
+        for (String sb : sortBy) {
+            Matcher sortMatcher = sortPattern.matcher(sb);
+            if (sortMatcher.find()) {
+                String field = sortMatcher.group(1);
+                String value = sortMatcher.group(3);
+                Sort.Direction direction = (value.equalsIgnoreCase("ASC")) ? Sort.Direction.ASC : Sort.Direction.DESC;
+                sortOrders.add(new Sort.Order(direction, field));
+            }
+        }
+        Sort sort = Sort.by(sortOrders);
+
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sort);
+
+        Page<User> users = userRepository.findAll(specification, sortedPageable);
         List<UserResponseDTO> result = users.stream()
                 .map(userMapper::toResponse)
                 .toList();

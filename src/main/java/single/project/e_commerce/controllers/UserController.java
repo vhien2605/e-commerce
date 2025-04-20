@@ -39,18 +39,22 @@ public class UserController {
     @GetMapping("/advanced-filter")
     public ApiResponse getAllUsersByAdvancedFilterAndPagination(
             Pageable pageable,
-            @RequestParam(name = "user", required = false) String[] user) {
+            @RequestParam(name = "user", required = false) String[] user,
+            @RequestParam(name = "sortBy", defaultValue = "id:asc") String[] sortBy
+    ) {
         return ApiSuccessResponse.builder()
-                .data(userService.getAllUsersAdvancedFilterAndPagination(pageable, user))
+                .data(userService.getAllUsersAdvancedFilterAndPagination(pageable, user, sortBy))
                 .status(HttpStatus.OK.value())
                 .message("Get all users successfully!")
                 .build();
     }
 
     @GetMapping("/filter")
-    public ApiResponse getAllUsersByAdvancedFilter(@RequestParam(name = "user", required = false) String[] user) {
+    public ApiResponse getAllUsersByAdvancedFilter(@RequestParam(name = "user", required = false) String[] user,
+                                                   @RequestParam(name = "sortBy", defaultValue = "id:asc") String[] sortBy
+    ) {
         return ApiSuccessResponse.builder()
-                .data(userService.getAllUsersAdvancedFilter(user))
+                .data(userService.getAllUsersAdvancedFilter(user, sortBy))
                 .status(HttpStatus.OK.value())
                 .message("Get all users successfully!")
                 .build();

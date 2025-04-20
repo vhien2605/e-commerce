@@ -2,6 +2,7 @@ package single.project.e_commerce.repositories;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -58,7 +59,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "shop"
     })
     @Override
-    public List<User> findAll(Specification<User> specification);
+    public List<User> findAll(Specification<User> specification, Sort sort);
 
     @EntityGraph(attributePaths = {
             "roles",
