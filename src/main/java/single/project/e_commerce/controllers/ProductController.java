@@ -4,6 +4,7 @@ package single.project.e_commerce.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -91,5 +92,31 @@ public class ProductController {
         } catch (JsonProcessingException e) {
             throw new AppException(ErrorCode.JSON_INVALID);
         }
+    }
+
+    @GetMapping("/filter")
+    @PreAuthorize("hasAuthority('read_product')")
+    public ApiResponse getProductFilter(
+            @RequestParam(name = "product", required = false) String[] product,
+            @RequestParam(name = "sortBy", defaultValue = "id:asc") String[] sortBy) {
+        return ApiSuccessResponse.builder()
+                .data(productService.getAllProductsFilter(product, sortBy))
+                .status(HttpStatus.OK.value())
+                .message("products read with filter successfully")
+                .build();
+    }
+
+
+    @GetMapping("/advanced-filter")
+    @PreAuthorize("hasAuthority('read_product')")
+    public ApiResponse getProductFilterAdvanced(
+            Pageable pageable,
+            @RequestParam(name = "product", required = false) String[] product,
+            @RequestParam(name = "sortBy", defaultValue = "id:asc") String[] sortBy) {
+        return ApiSuccessResponse.builder()
+                .data(productService.getAllProductFilterPagination(pageable, product, sortBy))
+                .status(HttpStatus.OK.value())
+                .message("products read with filter and pagination successfully")
+                .build();
     }
 }

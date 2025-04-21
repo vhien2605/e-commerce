@@ -32,6 +32,8 @@ public class AddressController {
                 .build();
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all-addresses")
     public ApiResponse getAllAddress() {
         return ApiSuccessResponse.builder()
@@ -41,6 +43,7 @@ public class AddressController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all-addresses/advanced-filter")
     public ApiResponse advancedFilterAddress(
             Pageable pageable,
@@ -53,6 +56,7 @@ public class AddressController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("all-addresses/filter")
     public ApiResponse advancedFilter(
             @RequestParam(name = "address", required = false) String[] address,

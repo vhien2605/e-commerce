@@ -3,15 +3,21 @@ package single.project.e_commerce.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import single.project.e_commerce.dto.request.CategoryRequestDTO;
 import single.project.e_commerce.dto.request.ProductRequestDTO;
 import single.project.e_commerce.dto.request.ProductUpdateRequestDTO;
 import single.project.e_commerce.dto.request.QuantityRequestDTO;
+import single.project.e_commerce.dto.response.PageResponseDTO;
 import single.project.e_commerce.dto.response.ProductDetailResponseDTO;
 import single.project.e_commerce.dto.response.ProductResponseDTO;
+import single.project.e_commerce.dto.response.UserResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.mappers.CategoryMapper;
 import single.project.e_commerce.mappers.ProductMapper;
@@ -20,11 +26,17 @@ import single.project.e_commerce.repositories.CategoryRepository;
 import single.project.e_commerce.repositories.ProductRepository;
 import single.project.e_commerce.repositories.ShopRepository;
 import single.project.e_commerce.repositories.UserRepository;
+import single.project.e_commerce.repositories.specifications.SpecificationBuilder;
+import single.project.e_commerce.utils.commons.AppConst;
 import single.project.e_commerce.utils.commons.GlobalMethod;
 import single.project.e_commerce.utils.enums.ErrorCode;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -166,5 +178,91 @@ public class ProductService {
         Product product = productRepository.findByIdWithReviews(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXIST));
         return productMapper.toResponse2(product);
+    }
+
+    public List<ProductResponseDTO> getAllProductsFilter(String[] product, String[] sortBy) {
+        SpecificationBuilder<Product> builder = new SpecificationBuilder<>();
+        Pattern pattern = Pattern.compile(AppConst.SEARCH_SPEC_OPERATOR);
+        Pattern sortPattern = Pattern.compile(AppConst.SORT_BY);
+
+        // build specification
+        for (String s : product) {
+            Matcher matcher = pattern.matcher(s);
+            if (matcher.find()) {
+                builder.with(matcher.group(1), matcher.group(2), matcher.group(3),
+                        matcher.group(4), matcher.group(5), matcher.group(6));
+            }
+        }
+
+        // build sort instance
+        List<Sort.Order> sortOrders = new ArrayList<>();
+        for (String sb : sortBy) {
+            Matcher sortMatcher = sortPattern.matcher(sb);
+            if (sortMatcher.find()) {
+                String field = sortMatcher.group(1);
+                String value = sortMatcher.group(3);
+                Sort.Direction direction = (value.equalsIgnoreCase("ASC")) ? Sort.Direction.ASC : Sort.Direction.DESC;
+                sortOrders.add(new Sort.Order(direction, field));
+            }
+        }
+        Sort sort = Sort.by(sortOrders);
+        Specification<Product> specification = builder.build();
+        List<Product> products = productRepository.findAll(specification, sort);
+        return products.stream()
+                .map(productMapper::toResponse)
+                .toList();
+    }
+
+    public PageResponseDTO<?> getAllProductFilterPagination(Pageable pageable, String[] product, String[] sortBy) {
+        SpecificationBuilder<Product> builder = new SpecificationBuilder<>();
+        Pattern pattern = Pattern.compile(AppConst.SEARCH_SPEC_OPERATOR);
+        Pattern sortPattern = Pattern.compile(AppConst.SORT_BY);
+
+        // build specification
+        for (String s : product) {
+            Matcher matcher = pattern.matcher(s);
+            if (matcher.find()) {
+                builder.with(matcher.group(1), matcher.group(2), matcher.group(3),
+                        matcher.group(4), matcher.group(5), matcher.group(6));
+            }
+        }
+        Specification<Product> specification = builder.build();
+
+        // build sort properties
+        List<Sort.Order> sortOrders = new ArrayList<>();
+        for (String sb : sortBy) {
+            Matcher sortMatcher = sortPattern.matcher(sb);
+            if (sortMatcher.find()) {
+                String field = sortMatcher.group(1);
+                String value = sortMatcher.group(3);
+                Sort.Direction direction = (value.equalsIgnoreCase("ASC")) ? Sort.Direction.ASC : Sort.Direction.DESC;
+                sortOrders.add(new Sort.Order(direction, field));
+            }
+        }
+        Sort sort = Sort.by(sortOrders);
+
+        // add sort properties to pageable
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sort);
+
+        //get page response when not fetching collection yet
+        Page<Product> products = productRepository.findAll(specification, sortedPageable);
+        List<Long> orderedIds = products.stream().map(Product::getId).toList();
+        // fetching collection in the second query
+        List<Product> afterFetchedUsers = productRepository.findAllProductsWithId(orderedIds);
+        Map<Long, Product> productByIdMap = afterFetchedUsers.stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        List<ProductResponseDTO> result = orderedIds.stream()
+                .map(productByIdMap::get)
+                .map(productMapper::toResponse)
+                .toList();
+        return PageResponseDTO.builder()
+                .data(result)
+                .pageNo(pageable.getPageNumber())
+                .pageSize(pageable.getPageSize())
+                .totalPage(products.getTotalPages())
+                .build();
     }
 }
