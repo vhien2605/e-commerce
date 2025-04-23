@@ -29,7 +29,8 @@ public enum ErrorCode {
     PRODUCT_NOT_EXIST(400, "product is not exist", HttpStatus.BAD_REQUEST),
     REVIEW_NOT_EXIST(400, "review is not exist", HttpStatus.BAD_REQUEST),
     SHOP_NOT_EXIST(400, "shop with owned user's username is not exist", HttpStatus.BAD_REQUEST),
-    SELLER_REGISTERED(400, "you are already a seller", HttpStatus.BAD_REQUEST);
+    SELLER_REGISTERED(400, "you are already a seller", HttpStatus.BAD_REQUEST),
+    CART_NOT_EXIST(400, "user cart is not exist", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;

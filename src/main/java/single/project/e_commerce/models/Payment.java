@@ -18,12 +18,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Payment extends AbstractEntity {
-    //    id long [primary key]
-//    order_id long [ref: - orders.id]
-//    user_id long [ref: > users.id]
-//    total_price bigint
-//    payment_method string
-//    paid_at datetime
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

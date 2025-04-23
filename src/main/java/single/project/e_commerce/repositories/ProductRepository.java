@@ -26,6 +26,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     })
     public Optional<Product> findById(Long id);
 
+    @EntityGraph(attributePaths = {
+            "shop"
+    })
+    @Query("SELECT p FROM Product p WHERE p.id=:id")
+    public Optional<Product> findProductById(@Param("id") Long id);
+
 
     @Override
     @EntityGraph(attributePaths = {

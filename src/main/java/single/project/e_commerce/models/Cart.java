@@ -19,7 +19,7 @@ public class Cart extends AbstractEntity {
     @Column(name = "id")
     private long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

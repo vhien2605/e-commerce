@@ -13,6 +13,7 @@ import single.project.e_commerce.utils.enums.Gender;
 import single.project.e_commerce.utils.enums.Status;
 
 import java.util.Set;
+import java.util.concurrent.atomic.LongAccumulator;
 
 @Setter
 @Getter
@@ -64,12 +65,12 @@ public class User extends AbstractEntity implements SupportsSpecification {
 
 
     @NotNull(message = "Address must be required!")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
 
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Cart cart;
 
     @OneToMany(mappedBy = "user")
@@ -79,6 +80,6 @@ public class User extends AbstractEntity implements SupportsSpecification {
     private Set<Payment> payments;
 
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Shop shop;
 }
