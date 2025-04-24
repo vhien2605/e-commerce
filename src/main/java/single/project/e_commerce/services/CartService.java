@@ -44,6 +44,7 @@ public class CartService {
                 .toList();
     }
 
+
     public String updateCartItems(CartUpdateRequestDTO dto) {
         String username = GlobalMethod.extractUserFromContext();
         Cart cart = cartRepository.getCartByUserUsername(username)
@@ -54,6 +55,9 @@ public class CartService {
         for (CartDetail cartDetail : cartDetails) {
             for (CartItemUpdateRequestDTO item : updatedItemsDTO) {
                 if (cartDetail.getId() == item.getId()) {
+                    if (item.getQuantity() <= 0 || item.getQuantity() > cartDetail.getProduct().getRemainingQuantity()) {
+                        throw new AppException(ErrorCode.QUANTITY_INVALID);
+                    }
                     cartDetail.setQuantity(item.getQuantity());
                     updatedItems.add(cartDetail);
                 }
@@ -73,7 +77,12 @@ public class CartService {
         for (CartDetail cartDetail : cartDetails) {
             // if item is already existed in cart, just increase quantity
             if (cartDetail.getProduct().getId() == productId) {
-                cartDetail.setQuantity(cartDetail.getQuantity() + quantity);
+                long newQuantity = cartDetail.getQuantity() + quantity;
+                // if new quantity passed product quantity, throw error
+                if (newQuantity > cartDetail.getProduct().getRemainingQuantity()) {
+                    throw new AppException(ErrorCode.QUANTITY_INVALID);
+                }
+                cartDetail.setQuantity(newQuantity);
                 cartDetailRepository.save(cartDetail);
                 return "Add products to cart successfully";
             }
@@ -82,6 +91,9 @@ public class CartService {
         // if item is not existed , create new
         Product product = productRepository.findProductById(productId)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXIST));
+        if (quantity > product.getRemainingQuantity()) {
+            throw new AppException(ErrorCode.QUANTITY_INVALID);
+        }
         CartDetail cartDetail = CartDetail.builder()
                 .product(product)
                 .price(product.getPrice())

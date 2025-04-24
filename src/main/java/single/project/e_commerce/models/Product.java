@@ -62,7 +62,7 @@ public class Product extends AbstractEntity implements SupportsSpecification {
     @OneToMany(mappedBy = "product")
     private Set<OrderDetail> orderDetails;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;
 }

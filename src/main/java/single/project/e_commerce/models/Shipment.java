@@ -51,7 +51,7 @@ public class Shipment extends AbstractEntity {
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;
 }

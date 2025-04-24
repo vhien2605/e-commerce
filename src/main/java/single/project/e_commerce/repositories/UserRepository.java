@@ -43,9 +43,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @EntityGraph(attributePaths = {
             "roles",
             "roles.permissions",
-            "address",
-            "cart",
-            "shop"
+            "shop",
+            "cart"
     })
     @Query("SELECT u FROM User u")
     public List<User> findAllUsersWithAllReferences();
@@ -70,7 +69,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     })
     @Override
     public Page<User> findAll(Specification<User> specification, Pageable pageable);
-    
+
     @EntityGraph(attributePaths = {
             "address",
             "cart",

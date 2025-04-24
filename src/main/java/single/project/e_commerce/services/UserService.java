@@ -108,7 +108,8 @@ public class UserService {
 
 
     public List<UserResponseDTO> getAllUsers() {
-        return userRepository.findAllUsersWithAllReferences()
+        List<User> users = userRepository.findAllUsersWithAllReferences();
+        return users
                 .stream().map(userMapper::toResponse).toList();
     }
 

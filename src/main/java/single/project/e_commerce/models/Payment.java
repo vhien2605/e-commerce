@@ -36,11 +36,11 @@ public class Payment extends AbstractEntity {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private Date paidAt;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }

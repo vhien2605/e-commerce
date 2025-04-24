@@ -70,7 +70,7 @@ public class User extends AbstractEntity implements SupportsSpecification {
     private Address address;
 
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Cart cart;
 
     @OneToMany(mappedBy = "user")
@@ -80,6 +80,6 @@ public class User extends AbstractEntity implements SupportsSpecification {
     private Set<Payment> payments;
 
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Shop shop;
 }

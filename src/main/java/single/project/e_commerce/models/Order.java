@@ -50,7 +50,7 @@ public class Order extends AbstractEntity {
 
     @OneToMany(mappedBy = "order")
     private Set<OrderDetail> orderDetails;
-    
+
     @OneToOne(mappedBy = "order")
     private Payment payment;
 }
