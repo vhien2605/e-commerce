@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import single.project.e_commerce.dto.request.CreateOrderRequestDTO;
-import single.project.e_commerce.dto.response.OrderDetailResponseDTO;
 import single.project.e_commerce.dto.response.OrderResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.mappers.OrderDetailMapper;
@@ -66,7 +65,7 @@ public class OrderService {
         orderDetailRepository.saveAll(orderDetails);
         return "create new order successfully";
     }
-    
+
 
     public List<OrderResponseDTO> getMyOrders() {
         String username = GlobalMethod.extractUserFromContext();
