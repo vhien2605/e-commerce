@@ -7,7 +7,7 @@ import single.project.e_commerce.dto.response.OwnedShopInformationDTO;
 import single.project.e_commerce.dto.response.UserResponseDTO;
 import single.project.e_commerce.models.User;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {RoleMapper.class, AddressMapper.class})
 public interface UserMapper {
     User toUser(UserRequestDTO dto);
 

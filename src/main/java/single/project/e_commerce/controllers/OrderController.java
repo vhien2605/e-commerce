@@ -33,10 +33,21 @@ public class OrderController {
     public ApiResponse getMyOrders() {
         return ApiSuccessResponse.builder()
                 .status(HttpStatus.OK.value())
-                .message("create order successfully")
+                .message("read my orders successfully")
                 .data(orderService.getMyOrders())
                 .build();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all-orders")
+    public ApiResponse getAllOrders() {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("read all orders successfully")
+                .data(orderService.getAllOrders())
+                .build();
+    }
+
 
     @PreAuthorize("hasAuthority('delete_order')")
     public ApiResponse deleteOrder() {

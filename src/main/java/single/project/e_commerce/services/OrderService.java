@@ -6,8 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import single.project.e_commerce.dto.request.CreateOrderRequestDTO;
+import single.project.e_commerce.dto.response.OrderDetailResponseDTO;
 import single.project.e_commerce.dto.response.OrderResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
+import single.project.e_commerce.mappers.OrderDetailMapper;
 import single.project.e_commerce.mappers.OrderMapper;
 import single.project.e_commerce.models.*;
 import single.project.e_commerce.repositories.*;
@@ -25,6 +27,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final OrderDetailRepository orderDetailRepository;
     private final UserRepository userRepository;
+    private final OrderDetailMapper orderDetailMapper;
 
     @Transactional
     public String createOrder(CreateOrderRequestDTO dto) {
@@ -68,6 +71,13 @@ public class OrderService {
     public List<OrderResponseDTO> getMyOrders() {
         String username = GlobalMethod.extractUserFromContext();
         List<Order> orders = orderRepository.findAllOrdersByUserUsername(username);
+        return orders.stream()
+                .map(orderMapper::toResponse)
+                .toList();
+    }
+
+    public List<OrderResponseDTO> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
         return orders.stream()
                 .map(orderMapper::toResponse)
                 .toList();

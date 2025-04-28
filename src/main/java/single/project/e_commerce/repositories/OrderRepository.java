@@ -12,9 +12,19 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @EntityGraph(attributePaths = {
+            "payment",
             "orderDetails",
-            "orderDetails.payment"
+            "orderDetails.shipment",
+            "orderDetails.product"
     })
     @Query("SELECT o FROM Order o INNER JOIN o.user u WHERE u.username=:username")
     public List<Order> findAllOrdersByUserUsername(@Param("username") String username);
+
+    @EntityGraph(attributePaths = {
+            "payment",
+            "orderDetails",
+            "orderDetails.shipment",
+            "orderDetails.product"
+    })
+    public List<Order> findAll();
 }

@@ -5,7 +5,7 @@ import single.project.e_commerce.dto.request.CreateOrderRequestDTO;
 import single.project.e_commerce.dto.response.OrderResponseDTO;
 import single.project.e_commerce.models.Order;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {OrderDetailMapper.class})
 public interface OrderMapper {
     Order toOrder(CreateOrderRequestDTO dto);
 

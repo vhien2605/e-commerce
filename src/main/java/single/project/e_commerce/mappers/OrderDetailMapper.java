@@ -7,7 +7,7 @@ import single.project.e_commerce.models.OrderDetail;
 
 @Mapper(componentModel = "spring")
 public interface OrderDetailMapper {
-    @Mapping(source = "product.name", target = "productId")
+    @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "product.name", target = "name")
     @Mapping(source = "product.imageUrl", target = "imageUrl")
     OrderDetailResponseDTO toResponse(OrderDetail orderDetail);

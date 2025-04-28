@@ -12,7 +12,7 @@ import single.project.e_commerce.models.Role;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {PermissionMapper.class})
 public interface RoleMapper {
     @Mapping(target = "permissions", source = "permissions", qualifiedByName = "mapPermissions")
     Role toRole(RoleRequestDTO dto);

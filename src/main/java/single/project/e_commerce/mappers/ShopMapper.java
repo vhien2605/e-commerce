@@ -7,7 +7,7 @@ import single.project.e_commerce.dto.response.RegisterShopResponseDTO;
 import single.project.e_commerce.dto.response.ShopInformationResponseDTO;
 import single.project.e_commerce.models.Shop;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface ShopMapper {
     Shop toShop(ShopRequestDTO dto);
 

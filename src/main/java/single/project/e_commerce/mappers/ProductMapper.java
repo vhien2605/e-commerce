@@ -6,7 +6,7 @@ import single.project.e_commerce.dto.response.ProductDetailResponseDTO;
 import single.project.e_commerce.dto.response.ProductResponseDTO;
 import single.project.e_commerce.models.Product;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class, ReviewMapper.class})
 public interface ProductMapper {
     Product toProduct(ProductRequestDTO dto);
 
