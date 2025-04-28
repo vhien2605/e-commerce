@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import single.project.e_commerce.models.Order;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -27,4 +28,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "orderDetails.product"
     })
     public List<Order> findAll();
+
+    @EntityGraph(attributePaths = {
+            "payment"
+    })
+    @Query("SELECT o FROM Order o INNER JOIN o.user u WHERE u.username=:username AND o.id=:id")
+    public Optional<Order> findOrderByUserUsernameAndId(@Param("username") String username,
+                                                        @Param("id") long id);
 }

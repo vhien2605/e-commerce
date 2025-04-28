@@ -66,7 +66,7 @@ public class OrderService {
         orderDetailRepository.saveAll(orderDetails);
         return "create new order successfully";
     }
-
+    
 
     public List<OrderResponseDTO> getMyOrders() {
         String username = GlobalMethod.extractUserFromContext();
@@ -81,5 +81,14 @@ public class OrderService {
         return orders.stream()
                 .map(orderMapper::toResponse)
                 .toList();
+    }
+
+    public String deleteOrder(long id) {
+        String username = GlobalMethod.extractUserFromContext();
+        Order order = orderRepository.findOrderByUserUsernameAndId(username, id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXIST));
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+        return "cancelled order with id " + id;
     }
 }

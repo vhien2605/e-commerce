@@ -1,6 +1,7 @@
 package single.project.e_commerce.controllers;
 
 
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,7 +51,12 @@ public class OrderController {
 
 
     @PreAuthorize("hasAuthority('delete_order')")
-    public ApiResponse deleteOrder() {
-        return null;
+    @PatchMapping("/delete-order/{id}")
+    public ApiResponse deleteOrder(@PathVariable @Min(value = 1, message = "id must greater than 0") long id) {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("delete order successfully")
+                .data(orderService.deleteOrder(id))
+                .build();
     }
 }
