@@ -52,6 +52,7 @@ public class CartController {
     }
 
     @PatchMapping("/update-quantity")
+    @PreAuthorize("hasAuthority('read_product')")
     public ApiResponse updateCartItems(@RequestBody @Valid CartUpdateRequestDTO dto) {
         return ApiSuccessResponse.builder()
                 .status(HttpStatus.OK.value())

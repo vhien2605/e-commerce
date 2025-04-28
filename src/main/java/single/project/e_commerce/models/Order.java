@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
+import single.project.e_commerce.utils.annotations.PhoneNumber;
 import single.project.e_commerce.utils.enums.OrderStatus;
 
 import java.util.Date;
@@ -33,6 +34,7 @@ public class Order extends AbstractEntity {
 
     @Column(name = "receiver_number")
     @NotBlank(message = "receiver number must be required")
+    @PhoneNumber(message = "phone number is invalid")
     private String receiverNumber;
 
     @Column(name = "total_price")
@@ -41,10 +43,11 @@ public class Order extends AbstractEntity {
 
     @Column(name = "status")
     @NotNull(message = "status must be required")
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     @Column(name = "order_at")
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @NotNull(message = "Date is required")
     private Date orderAt;
 
@@ -53,4 +56,8 @@ public class Order extends AbstractEntity {
 
     @OneToOne(mappedBy = "order")
     private Payment payment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

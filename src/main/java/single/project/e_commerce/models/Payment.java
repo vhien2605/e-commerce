@@ -33,7 +33,7 @@ public class Payment extends AbstractEntity {
 
     @Column(name = "paid_at")
     @NotNull(message = "paid date is required")
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date paidAt;
 
     @OneToOne(fetch = FetchType.LAZY)

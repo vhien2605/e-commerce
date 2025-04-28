@@ -82,4 +82,8 @@ public class User extends AbstractEntity implements SupportsSpecification {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Shop shop;
+
+
+    @OneToMany(mappedBy = "user")
+    private Set<Order> orders;
 }

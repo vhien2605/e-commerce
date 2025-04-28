@@ -40,6 +40,7 @@ public class Shipment extends AbstractEntity {
     @NotBlank(message = "shipping status must not be blank")
     @Column(name = "shipping_status")
     @EnumPattern(name = "shippingStatus", regexp = "SHIPPED|SHIPPING")
+    @Enumerated(EnumType.STRING)
     private ShippingStatus shippingStatus;
 
     @Column(name = "delivered_at")

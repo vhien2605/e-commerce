@@ -15,7 +15,7 @@ import single.project.e_commerce.dto.response.ApiSuccessResponse;
 import single.project.e_commerce.services.ReviewService;
 
 @RestController
-@RequestMapping("/api/review/")
+@RequestMapping("/api/review")
 @RequiredArgsConstructor
 @Validated
 public class ReviewController {
@@ -33,14 +33,12 @@ public class ReviewController {
     }
 
     @PreAuthorize("hasRole('CUSTOMER') OR hasRole('SELLER')")
-    @PatchMapping("/{id}")
-    public ApiResponse updateReview(@Min(value = 1, message = "review id must greater than 0")
-                                    @PathVariable("id") long reviewId
-            , @RequestBody @Valid ReviewUpdateRequestDTO dto) {
+    @PatchMapping("/")
+    public ApiResponse updateReview(@RequestBody @Valid ReviewUpdateRequestDTO dto) {
         return ApiSuccessResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("Update review successfully")
-                .data(reviewService.update(reviewId, dto))
+                .data(reviewService.update(dto))
                 .build();
     }
 
@@ -51,6 +49,16 @@ public class ReviewController {
                 .status(HttpStatus.OK.value())
                 .message("read my reviews successfully")
                 .data(reviewService.readMyReviews())
+                .build();
+    }
+
+    @PreAuthorize("hasRole('CUSTOMER') OR hasRole('SELLER')")
+    @DeleteMapping("/my-reviews/delete/{id}")
+    public ApiResponse deleteMyReview(@PathVariable @Min(value = 1, message = "id must be greater than 0") long reviewId) {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("deleted review")
+                .data(reviewService.deleteReview(reviewId))
                 .build();
     }
 }

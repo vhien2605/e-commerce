@@ -11,6 +11,8 @@ import lombok.Setter;
 @Getter
 @Builder
 public class ReviewUpdateRequestDTO {
+    @NotNull(message = "review is must be required")
+    private Long reviewId;
     @NotNull(message = "this must be required")
     private int rate;
     @NotBlank(message = "title must be required")

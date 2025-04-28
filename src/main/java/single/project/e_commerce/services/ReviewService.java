@@ -41,14 +41,12 @@ public class ReviewService {
     }
 
 
-    public ReviewResponseDTO update(Long reviewId, ReviewUpdateRequestDTO dto) {
-        Review review = reviewRepository.findById(reviewId)
+    public ReviewResponseDTO update(ReviewUpdateRequestDTO dto) {
+        Review review = reviewRepository.findById(dto.getReviewId())
                 .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_EXIST));
-
         review.setTitle(dto.getTitle());
         review.setRate(dto.getRate());
         review.setDescription(dto.getDescription());
-
         return reviewMapper.toResponse(reviewRepository.save(review));
     }
 
@@ -58,5 +56,10 @@ public class ReviewService {
         return reviewRepository.getByUsername(username).stream()
                 .map(reviewMapper::toResponse)
                 .toList();
+    }
+
+    public String deleteReview(Long reviewId) {
+        reviewRepository.deleteById(reviewId);
+        return "deleted review";
     }
 }
