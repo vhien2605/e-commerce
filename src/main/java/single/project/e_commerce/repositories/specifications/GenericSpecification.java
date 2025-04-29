@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
 import single.project.e_commerce.models.Address;
 import single.project.e_commerce.models.Category;
+import single.project.e_commerce.models.User;
 import single.project.e_commerce.utils.commons.AppConst;
 
 import java.util.function.Function;
@@ -33,6 +34,9 @@ public class GenericSpecification<T extends SupportsSpecification> implements Sp
         } else if (criteria.getKey().equalsIgnoreCase("address")) {
             Join<T, Address> join = root.join("address", JoinType.INNER);
             return buildJoinAddressPredicate(join, query, builder);
+        } else if (criteria.getKey().equalsIgnoreCase("username")) {
+            Join<T, User> join = root.join("user", JoinType.INNER);
+            return buildJoinUserPredicate(join, query, builder);
         }
         return buildNormalPredicate(root, query, builder);
     }
@@ -60,5 +64,9 @@ public class GenericSpecification<T extends SupportsSpecification> implements Sp
         Expression<String> fullName = builder.concat(join.get("name"), join.get("city"));
         fullName = builder.concat(fullName, join.get("country"));
         return builder.like(builder.lower(fullName), "%" + criteria.getValue().toString().toLowerCase() + "%");
+    }
+
+    private Predicate buildJoinUserPredicate(Join<T, ?> join, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        return builder.equal(builder.lower(join.get("username")), criteria.getValue().toString().toLowerCase());
     }
 }

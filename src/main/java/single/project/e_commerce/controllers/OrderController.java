@@ -3,6 +3,7 @@ package single.project.e_commerce.controllers;
 
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -51,12 +52,27 @@ public class OrderController {
 
 
     @PreAuthorize("hasAuthority('delete_order')")
-    @PatchMapping("/delete-order/{id}")
-    public ApiResponse deleteOrder(@PathVariable @Min(value = 1, message = "id must greater than 0") long id) {
+    @PatchMapping("/cancel-order/{id}")
+    public ApiResponse cancelOrder(@PathVariable @Min(value = 1, message = "id must greater than 0") long id) {
         return ApiSuccessResponse.builder()
                 .status(HttpStatus.OK.value())
-                .message("delete order successfully")
-                .data(orderService.deleteOrder(id))
+                .message("cancel order successfully")
+                .data(orderService.cancelOrder(id))
+                .build();
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('CUSTOMER')")
+    @GetMapping("/advanced-filter")
+    public ApiResponse getOrderAdvancedFilter(
+            Pageable pageable,
+            @RequestParam(name = "order", required = false) String[] order,
+            @RequestParam(name = "sortBy", defaultValue = "id:asc") String[] sortBy
+    ) {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("get advanced filter order successfully")
+                .data(orderService.getOrdersByAdvancedFilter(pageable, order, sortBy))
                 .build();
     }
 }
