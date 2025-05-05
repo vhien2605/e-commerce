@@ -1,6 +1,7 @@
 package single.project.e_commerce.controllers;
 
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority('create_order')")
     @PostMapping("/create-order")
-    public ApiResponse createOrder(@RequestBody CreateOrderRequestDTO dto) {
+    public ApiResponse createOrder(@RequestBody @Valid CreateOrderRequestDTO dto) {
         return ApiSuccessResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("create order successfully")
