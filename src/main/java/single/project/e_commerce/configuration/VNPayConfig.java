@@ -1,6 +1,7 @@
 package single.project.e_commerce.configuration;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import single.project.e_commerce.utils.commons.VNPayUtils;
@@ -16,8 +17,11 @@ public class VNPayConfig {
     @Getter
     @Value("${payment.vnPay.url}")
     private String vnp_PayUrl;
+
+    @Getter
     @Value("${payment.vnPay.returnUrl}")
     private String vnp_ReturnUrl;
+
     @Value("${payment.vnPay.tmnCode}")
     private String vnp_TmnCode;
     @Getter

@@ -30,7 +30,8 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final String[] WHITE_LIST = {
-            "/api/auth/**"
+            "/api/auth/**",
+            "/api/payment/vn-pay-callback"
     };
 
     private final String[] SYSTEM_ADMIN_LIST = {
