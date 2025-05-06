@@ -6,4 +6,5 @@ import single.project.e_commerce.models.OrderDetail;
 
 @Repository
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
+    
 }

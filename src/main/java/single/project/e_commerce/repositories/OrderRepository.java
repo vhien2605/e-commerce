@@ -31,7 +31,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
             "orderDetails.shipment",
             "orderDetails.product"
     })
-    public List<Order> findAll();
+    @Query("SELECT o FROM Order o WHERE o.id IN :ids")
+    public List<Order> findAllByIdsNoPagination(@Param("ids") List<Long> ids);
 
     @EntityGraph(attributePaths = {
             "payment"

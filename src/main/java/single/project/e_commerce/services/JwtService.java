@@ -1,11 +1,10 @@
 package single.project.e_commerce.services;
 
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +16,7 @@ import single.project.e_commerce.utils.enums.ErrorCode;
 import single.project.e_commerce.utils.enums.TokenType;
 
 import java.security.Key;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +51,16 @@ public class JwtService {
     }
 
     public void validateToken(String token, TokenType type) {
-        var claims = extractAllClaim(token, type);  // if signature not match and other invalids -> throw exception
-        checkExpired(token, type);
+        try {
+            var claims = extractAllClaim(token, type);
+            // catch json.web.io , throw into AppException to global handling
+        } catch (SignatureException e) {
+            throw new AppException(ErrorCode.TOKEN_SIGNATURE_INVALID);
+        } catch (ExpiredJwtException e) {
+            throw new AppException(ErrorCode.TOKEN_IS_EXPIRED);
+        } catch (JwtException e) {
+            throw new AppException(ErrorCode.TOKEN_INVALID);
+        }
         checkDisable(token, type);
     }
 
@@ -72,11 +80,6 @@ public class JwtService {
         }
     }
 
-    public void checkExpired(String token, TokenType type) {
-        if (extractExpiration(token, type).before(new Date())) {
-            throw new AppException(ErrorCode.TOKEN_IS_EXPIRED);
-        }
-    }
 
     private String generateToken(Map<String, Object> claims, SecurityUser user, TokenType type) {
         log.info("------------------------- start generating token ------------------------------");

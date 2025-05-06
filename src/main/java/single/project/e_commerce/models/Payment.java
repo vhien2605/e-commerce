@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import single.project.e_commerce.utils.annotations.EnumPattern;
+import single.project.e_commerce.utils.enums.PaymentMethod;
 
 import java.util.Date;
 
@@ -29,7 +31,9 @@ public class Payment extends AbstractEntity {
 
     @Column(name = "payment_method")
     @NotBlank(message = "payment method is required")
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    @EnumPattern(name = "paymentMethod", regexp = "VNPAY|PAY_WHEN_RECEIVED")
+    private PaymentMethod paymentMethod;
 
     @Column(name = "paid_at")
     @NotNull(message = "paid date is required")

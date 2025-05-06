@@ -8,12 +8,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import single.project.e_commerce.configuration.VNPayConfig;
+import single.project.e_commerce.dto.request.AfterPaymentRequestDTO;
 import single.project.e_commerce.dto.request.PaymentRequestDTO;
 import single.project.e_commerce.dto.response.PaymentUrlResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.models.Order;
+import single.project.e_commerce.models.User;
 import single.project.e_commerce.repositories.OrderRepository;
 import single.project.e_commerce.repositories.PaymentRepository;
+import single.project.e_commerce.repositories.UserRepository;
 import single.project.e_commerce.utils.commons.VNPayUtils;
 import single.project.e_commerce.utils.enums.ErrorCode;
 import single.project.e_commerce.utils.enums.TokenType;
@@ -29,6 +32,7 @@ public class PaymentService {
     private final VNPayConfig vnPayConfig;
     private final OrderRepository orderRepository;
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
 
     public PaymentUrlResponseDTO checkout(PaymentRequestDTO dto, HttpServletRequest request, HttpServletResponse response) {
@@ -84,8 +88,19 @@ public class PaymentService {
     public String success(String orderIdsString, String token) {
         List<Long> orderIds = Arrays.stream(orderIdsString.split(","))
                 .map(Long::parseLong).toList();
+        //validate token
         jwtService.validateToken(token, TokenType.ACCESS);
         return "payment successfully";
+    }
+
+    public String createPaymentAndShipping(AfterPaymentRequestDTO dto) {
+        List<Long> orderIds = dto.getOrderIds();
+        String token = dto.getToken();
+        String username = jwtService.extractUsername(token, TokenType.ACCESS);
+        User user = userRepository.findUserWithNoCollectionByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+
+        return "";
     }
 
 

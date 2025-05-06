@@ -88,4 +88,12 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     })
     @Query("SELECT u FROM User u WHERE u.username=:username")
     public Optional<User> findUserWithCartItems(@Param("username") String username);
+
+
+    @EntityGraph(attributePaths = {
+            "cart",
+            "shop"
+    })
+    @Query("SELECT u FROM User u WHERE u.username=:username")
+    public Optional<User> findUserWithNoCollectionByUsername(@Param("username") String username);
 }

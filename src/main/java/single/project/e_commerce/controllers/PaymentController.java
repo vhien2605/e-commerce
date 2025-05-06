@@ -4,12 +4,12 @@ package single.project.e_commerce.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import single.project.e_commerce.dto.request.AfterPaymentRequestDTO;
 import single.project.e_commerce.dto.request.PaymentRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
 import single.project.e_commerce.dto.response.ApiSuccessResponse;
@@ -55,5 +55,14 @@ public class PaymentController {
                     .data(null)
                     .build();
         }
+    }
+
+    @PostMapping("/create-payment-and-shipping")
+    public ApiResponse createPaymentAndShipment(@RequestBody @Valid AfterPaymentRequestDTO dto) {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("create payment and shipping successfully")
+                .data(paymentService.createPaymentAndShipping(dto))
+                .build();
     }
 }
