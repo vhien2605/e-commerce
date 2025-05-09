@@ -59,6 +59,7 @@ public class PaymentController {
     }
 
     @PostMapping("/create-payment-and-shipping")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('CUSTOMER')")
     public ApiResponse createPaymentAndShipment(@RequestBody @Valid AfterPaymentRequestDTO dto) {
         return ApiSuccessResponse.builder()
                 .status(HttpStatus.OK.value())
