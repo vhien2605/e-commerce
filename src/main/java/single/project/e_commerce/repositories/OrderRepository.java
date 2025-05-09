@@ -57,7 +57,17 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
             "orderDetails.product"
     })
     @Query("SELECT o FROM Order o WHERE o.id IN :ids")
-    public List<Order> findAllWithIds(@Param("ids") List<Long> ids);
+    public List<Order> subPaginationOrder(@Param("ids") List<Long> ids);
+
+    
+    @EntityGraph(attributePaths = {
+            "payment",
+            "orderDetails",
+            "orderDetails.shipment",
+            "orderDetails.product"
+    })
+    @Query("SELECT o FROM Order o WHERE o.id IN :ids")
+    public List<Order> findAllOrdersByIdsWithCollection(@Param("ids") List<Long> ids);
 
     @EntityGraph(attributePaths = {
             "payment"

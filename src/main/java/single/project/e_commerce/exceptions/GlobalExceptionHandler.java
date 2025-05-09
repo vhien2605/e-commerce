@@ -43,4 +43,16 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false))
                 .build();
     }
+
+    @ExceptionHandler(value = {Exception.class})
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse serverException(Exception e, WebRequest request) {
+        log.info("---------------------------500 server exception handler start---------------------------");
+        return ApiErrorResponse.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(e.getMessage())
+                .error(e.toString())
+                .path(request.getDescription(false))
+                .build();
+    }
 }

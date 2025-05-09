@@ -37,7 +37,7 @@ public class Shipment extends AbstractEntity {
     @NotBlank(message = "receiver number must be required")
     private String receiverNumber;
 
-    @NotBlank(message = "shipping status must not be blank")
+    @NotNull(message = "shipping status must not be blank")
     @Column(name = "shipping_status")
     @EnumPattern(name = "shippingStatus", regexp = "SHIPPED|SHIPPING")
     @Enumerated(EnumType.STRING)
@@ -45,7 +45,6 @@ public class Shipment extends AbstractEntity {
 
     @Column(name = "delivered_at")
     @JsonFormat(pattern = "dd/MM/yyyy")
-    @NotNull(message = "Date is required")
     private Date deliveredAt;
 
     @OneToOne

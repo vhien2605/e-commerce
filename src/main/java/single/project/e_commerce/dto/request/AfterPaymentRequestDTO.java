@@ -13,10 +13,6 @@ import java.util.List;
 @Getter
 @Builder
 public class AfterPaymentRequestDTO implements Serializable {
-
     @NotEmpty(message = "this list must not be empty")
     private List<Long> orderIds;
-
-    @NotBlank(message = "this must not be blank")
-    private String token;
 }

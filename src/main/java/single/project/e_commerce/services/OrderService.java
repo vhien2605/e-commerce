@@ -137,7 +137,7 @@ public class OrderService {
         Page<Order> orders = orderRepository.findAll(specification, pageable);
         List<Long> orderedOrderIds = orders.stream().map(Order::getId).toList();
         // fetching collection in the second query
-        List<Order> afterFetchedOrders = orderRepository.findAllWithIds(orderedOrderIds);
+        List<Order> afterFetchedOrders = orderRepository.subPaginationOrder(orderedOrderIds);
         Map<Long, Order> orderByIdMap = afterFetchedOrders.stream()
                 .collect(Collectors.toMap(Order::getId, Function.identity()));
 

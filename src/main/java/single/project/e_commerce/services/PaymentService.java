@@ -6,19 +6,21 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import single.project.e_commerce.configuration.VNPayConfig;
 import single.project.e_commerce.dto.request.AfterPaymentRequestDTO;
 import single.project.e_commerce.dto.request.PaymentRequestDTO;
 import single.project.e_commerce.dto.response.PaymentUrlResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
-import single.project.e_commerce.models.Order;
-import single.project.e_commerce.models.User;
-import single.project.e_commerce.repositories.OrderRepository;
-import single.project.e_commerce.repositories.PaymentRepository;
-import single.project.e_commerce.repositories.UserRepository;
+import single.project.e_commerce.models.*;
+import single.project.e_commerce.repositories.*;
+import single.project.e_commerce.utils.commons.GlobalMethod;
 import single.project.e_commerce.utils.commons.VNPayUtils;
 import single.project.e_commerce.utils.enums.ErrorCode;
+import single.project.e_commerce.utils.enums.PaymentMethod;
+import single.project.e_commerce.utils.enums.ShippingStatus;
 import single.project.e_commerce.utils.enums.TokenType;
 
 
@@ -26,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
@@ -33,7 +36,8 @@ public class PaymentService {
     private final OrderRepository orderRepository;
     private final JwtService jwtService;
     private final UserRepository userRepository;
-
+    private final OrderDetailRepository orderDetailRepository;
+    private final ShipmentRepository shipmentRepository;
 
     public PaymentUrlResponseDTO checkout(PaymentRequestDTO dto, HttpServletRequest request, HttpServletResponse response) {
         Set<Long> orderIds = dto.getOrderIds();
@@ -93,14 +97,48 @@ public class PaymentService {
         return "payment successfully";
     }
 
+
+    @Transactional
     public String createPaymentAndShipping(AfterPaymentRequestDTO dto) {
         List<Long> orderIds = dto.getOrderIds();
-        String token = dto.getToken();
-        String username = jwtService.extractUsername(token, TokenType.ACCESS);
+        String username = GlobalMethod.extractUserFromContext();
+        log.info("find user");
         User user = userRepository.findUserWithNoCollectionByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
 
-        return "";
+        log.info("find orders");
+        List<Order> orders = orderRepository.findAllOrdersByIdsWithCollection(orderIds);
+
+        log.info("find orderDetails");
+        List<Object[]> orderDetailsWithShop = orderDetailRepository.findAllByOrderIdsWithShop(orderIds);
+        Map<Long, Long> odIdShopIdMap = orderDetailsWithShop.stream()
+                .collect(Collectors.toMap(
+                        ods -> ((OrderDetail) ods[0]).getId(),
+                        ods -> (Long) ods[1]));
+        List<Payment> payments = new ArrayList<>();
+        List<Shipment> shipments = new ArrayList<>();
+        for (Order order : orders) {
+            payments.add(Payment.builder()
+                    .price(order.getTotalPrice())
+                    .paymentMethod(PaymentMethod.VNPAY)
+                    .paidAt(new Date())
+                    .order(order)
+                    .user(user)
+                    .build());
+            for (OrderDetail orderDetail : order.getOrderDetails()) {
+                shipments.add(Shipment.builder()
+                        .trackingId(UUID.randomUUID().toString())
+                        .receiverAddress(order.getReceiverAddress())
+                        .receiverNumber(order.getReceiverNumber())
+                        .shippingStatus(ShippingStatus.SHIPPING)
+                        .orderDetail(orderDetail)
+                        .shop(Shop.builder().id(odIdShopIdMap.get(orderDetail.getId())).build())
+                        .build());
+            }
+        }
+        paymentRepository.saveAll(payments);
+        shipmentRepository.saveAll(shipments);
+        return "Create payment and shipping successfully,please check information again to assure nothing wrong";
     }
 
 

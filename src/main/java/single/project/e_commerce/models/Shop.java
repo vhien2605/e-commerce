@@ -23,7 +23,6 @@ public class Shop extends AbstractEntity {
     @NotBlank(message = "name must be required")
     private String name;
 
-
     @Column(name = "description", columnDefinition = "TEXT")
     @NotBlank(message = "description must be required")
     private String description;

@@ -30,7 +30,7 @@ public class Payment extends AbstractEntity {
     private double price;
 
     @Column(name = "payment_method")
-    @NotBlank(message = "payment method is required")
+    @NotNull(message = "payment method is required")
     @Enumerated(EnumType.STRING)
     @EnumPattern(name = "paymentMethod", regexp = "VNPAY|PAY_WHEN_RECEIVED")
     private PaymentMethod paymentMethod;
