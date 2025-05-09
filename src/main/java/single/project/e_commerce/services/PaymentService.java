@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import single.project.e_commerce.configuration.VNPayConfig;
 import single.project.e_commerce.dto.request.AfterPaymentRequestDTO;
 import single.project.e_commerce.dto.request.PaymentRequestDTO;
+import single.project.e_commerce.dto.response.PaymentSuccessResponseDTO;
 import single.project.e_commerce.dto.response.PaymentUrlResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.models.*;
@@ -38,6 +39,7 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final ShipmentRepository shipmentRepository;
+    private final ProductRepository productRepository;
 
     public PaymentUrlResponseDTO checkout(PaymentRequestDTO dto, HttpServletRequest request, HttpServletResponse response) {
         Set<Long> orderIds = dto.getOrderIds();
@@ -89,12 +91,20 @@ public class PaymentService {
         return vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
     }
 
-    public String success(String orderIdsString, String token) {
+    public PaymentSuccessResponseDTO success(String orderIdsString, String token, HttpServletResponse response) {
+        // get orderIds and token from cookie
         List<Long> orderIds = Arrays.stream(orderIdsString.split(","))
                 .map(Long::parseLong).toList();
         //validate token
         jwtService.validateToken(token, TokenType.ACCESS);
-        return "payment successfully";
+        // after get value of cookie, remove the cookie
+        removeCookie("orderIds", "/api/payment", response);
+        removeCookie("token", "/api/payment", response);
+        return PaymentSuccessResponseDTO.builder()
+                .orderIds(orderIds)
+                .message("Payment successfully, your order will be updated and set to the shipment service")
+                // FE use this orderIds to request create payment and shipping
+                .build();
     }
 
 
@@ -115,8 +125,13 @@ public class PaymentService {
                 .collect(Collectors.toMap(
                         ods -> ((OrderDetail) ods[0]).getId(),
                         ods -> (Long) ods[1]));
+        Map<Long, Product> odIdProductMap = orderDetailsWithShop.stream()
+                .collect(Collectors.toMap(
+                        ods -> ((OrderDetail) ods[0]).getId(),
+                        ods -> (Product) ods[2]));
         List<Payment> payments = new ArrayList<>();
         List<Shipment> shipments = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         for (Order order : orders) {
             payments.add(Payment.builder()
                     .price(order.getTotalPrice())
@@ -126,6 +141,15 @@ public class PaymentService {
                     .user(user)
                     .build());
             for (OrderDetail orderDetail : order.getOrderDetails()) {
+                // update product quantity
+                Product product = odIdProductMap.get(orderDetail.getId());
+                if (orderDetail.getQuantity() <= 0 || product.getRemainingQuantity() < orderDetail.getQuantity()) {
+                    throw new AppException(ErrorCode.QUANTITY_INVALID);
+                }
+                product.setSoldQuantity(product.getSoldQuantity() + orderDetail.getQuantity());
+                product.setRemainingQuantity(product.getRemainingQuantity() - orderDetail.getQuantity());
+                products.add(product);
+                // create shipment
                 shipments.add(Shipment.builder()
                         .trackingId(UUID.randomUUID().toString())
                         .receiverAddress(order.getReceiverAddress())
@@ -138,6 +162,7 @@ public class PaymentService {
         }
         paymentRepository.saveAll(payments);
         shipmentRepository.saveAll(shipments);
+        productRepository.saveAll(products);
         return "Create payment and shipping successfully,please check information again to assure nothing wrong";
     }
 

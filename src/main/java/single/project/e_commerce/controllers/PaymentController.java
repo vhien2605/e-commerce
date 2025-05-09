@@ -40,13 +40,14 @@ public class PaymentController {
     @GetMapping("/vn-pay-callback")
     public ApiResponse payCallbackHandler(@RequestParam(name = "vnp_ResponseCode", defaultValue = "99") String status,
                                           @CookieValue("orderIds") String orderIds,
-                                          @CookieValue("token") String token
+                                          @CookieValue("token") String token,
+                                          HttpServletResponse response
     ) {
         if (status.equals("00")) {
             return ApiSuccessResponse.builder()
                     .status(HttpStatus.OK.value())
                     .message("success")
-                    .data(paymentService.success(orderIds, token))
+                    .data(paymentService.success(orderIds, token, response))
                     .build();
         } else {
             return ApiSuccessResponse.builder()
