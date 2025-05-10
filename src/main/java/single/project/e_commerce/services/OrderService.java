@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class OrderService {
+    private final CartDetailRepository cartDetailRepository;
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final OrderDetailRepository orderDetailRepository;
@@ -71,6 +72,10 @@ public class OrderService {
                             .build()
             );
         }
+
+
+        // delete cartItem in cart
+        cartDetailRepository.deleteAll(cartDetails);
 
         log.info("save all order details");
         // save orderDetail
