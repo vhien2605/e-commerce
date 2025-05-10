@@ -10,13 +10,16 @@ public enum ShippingStatus {
     @JsonProperty("shipping")
     SHIPPING,
 
+    @JsonProperty("returning")
+    RETURNING,
+
     UNKNOWN;
 
     @JsonCreator
     public static ShippingStatus from(String value) {
         if (value == null) return UNKNOWN;
         try {
-            return ShippingStatus.valueOf(value.toLowerCase());
+            return ShippingStatus.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
             return UNKNOWN;
         }

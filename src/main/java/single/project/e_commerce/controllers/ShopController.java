@@ -11,6 +11,7 @@ import single.project.e_commerce.dto.request.ShopRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
 import single.project.e_commerce.dto.response.ApiSuccessResponse;
 import single.project.e_commerce.dto.response.ShopInformationResponseDTO;
+import single.project.e_commerce.services.ShipmentService;
 import single.project.e_commerce.services.ShopService;
 
 @RestController
@@ -19,6 +20,7 @@ import single.project.e_commerce.services.ShopService;
 @Validated
 public class ShopController {
     private final ShopService shopService;
+    private final ShipmentService shipmentService;
 
     @PostMapping("/register-shop")
     public ApiResponse registerShop(@RequestBody @Valid ShopRequestDTO dto) {
@@ -62,6 +64,17 @@ public class ShopController {
                 .data(shopService.getMyShop())
                 .status(HttpStatus.OK.value())
                 .message("Get shop detail information successfully!")
+                .build();
+    }
+
+
+    @GetMapping("/my-shop/shipments")
+    @PreAuthorize("hasRole('SELLER')")
+    public ApiResponse getShopShipments() {
+        return ApiSuccessResponse.builder()
+                .data(shipmentService.getShopShipment())
+                .status(HttpStatus.OK.value())
+                .message("Get all shop shipments successfully")
                 .build();
     }
 }

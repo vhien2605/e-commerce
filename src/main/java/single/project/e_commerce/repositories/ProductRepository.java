@@ -84,4 +84,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     })
     @Query("SELECT p FROM Product p INNER JOIN p.shop s INNER JOIN s.user u WHERE u.username=:username")
     public List<Product> findProductsByUsername(@Param("username") String username);
+
+    @Query("SELECT p FROM Product p INNER JOIN p.orderDetails od INNER JOIN od.shipment s WHERE s.id=:shipmentId")
+    public Optional<Product> findProductByShipment(@Param("shipmentId") Long shipmentId);
 }

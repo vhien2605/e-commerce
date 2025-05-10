@@ -16,7 +16,7 @@ public enum PaymentMethod {
     public static PaymentMethod from(String value) {
         if (value == null) return UNKNOWN;
         try {
-            return PaymentMethod.valueOf(value.toLowerCase());
+            return PaymentMethod.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
             return UNKNOWN;
         }

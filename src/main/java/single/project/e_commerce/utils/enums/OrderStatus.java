@@ -20,7 +20,7 @@ public enum OrderStatus {
     public static OrderStatus from(String value) {
         if (value == null) return UNKNOWN;
         try {
-            return OrderStatus.valueOf(value.toLowerCase());
+            return OrderStatus.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
             return UNKNOWN;
         }

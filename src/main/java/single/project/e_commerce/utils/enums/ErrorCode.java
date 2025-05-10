@@ -33,7 +33,8 @@ public enum ErrorCode {
     CART_NOT_EXIST(400, "user cart is not exist", HttpStatus.BAD_REQUEST),
     QUANTITY_INVALID(400, "quantity input is invalid", HttpStatus.BAD_REQUEST),
     ORDER_NOT_EXIST(400, "order is not exist", HttpStatus.BAD_REQUEST),
-    TOKEN_SIGNATURE_INVALID(400, "token signature is invalid", HttpStatus.BAD_REQUEST);;
+    TOKEN_SIGNATURE_INVALID(400, "token signature is invalid", HttpStatus.BAD_REQUEST),
+    SHIPMENT_NOT_EXIST(400, "Shipment is not exist", HttpStatus.BAD_REQUEST);
     private final int code;
     private final String message;
     private final HttpStatus httpStatus;

@@ -86,4 +86,7 @@ public class User extends AbstractEntity implements SupportsSpecification {
 
     @OneToMany(mappedBy = "user")
     private Set<Order> orders;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Shipment> shipments;
 }

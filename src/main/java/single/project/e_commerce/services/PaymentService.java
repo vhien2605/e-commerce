@@ -157,6 +157,7 @@ public class PaymentService {
                         .shippingStatus(ShippingStatus.SHIPPING)
                         .orderDetail(orderDetail)
                         .shop(Shop.builder().id(odIdShopIdMap.get(orderDetail.getId())).build())
+                        .user(user)
                         .build());
             }
         }

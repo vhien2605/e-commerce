@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import single.project.e_commerce.utils.annotations.EnumPattern;
 import single.project.e_commerce.utils.enums.ShippingStatus;
 
@@ -39,7 +40,7 @@ public class Shipment extends AbstractEntity {
 
     @NotNull(message = "shipping status must not be blank")
     @Column(name = "shipping_status")
-    @EnumPattern(name = "shippingStatus", regexp = "SHIPPED|SHIPPING")
+    @EnumPattern(name = "shippingStatus", regexp = "SHIPPED|SHIPPING|RETURNING")
     @Enumerated(EnumType.STRING)
     private ShippingStatus shippingStatus;
 
@@ -54,4 +55,9 @@ public class Shipment extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
