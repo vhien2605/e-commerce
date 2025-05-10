@@ -5,10 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Setter
 @Getter
 @Builder
-public class PaymentUrlResponseDTO implements Serializable {
-    private String url;
+public class PaymentStatusResponseDTO implements Serializable {
+    private String status;
+    private String message;
 }

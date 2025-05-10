@@ -1,10 +1,7 @@
 package single.project.e_commerce.services;
 
 
-import io.micrometer.common.util.StringUtils;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,17 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import single.project.e_commerce.configuration.VNPayConfig;
 import single.project.e_commerce.dto.request.AfterPaymentRequestDTO;
 import single.project.e_commerce.dto.request.PaymentRequestDTO;
-import single.project.e_commerce.dto.response.PaymentSuccessResponseDTO;
-import single.project.e_commerce.dto.response.PaymentUrlResponseDTO;
+import single.project.e_commerce.dto.response.PaymentStatusResponseDTO;
+import single.project.e_commerce.dto.response.CheckoutResponseDTO;
 import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.models.*;
 import single.project.e_commerce.repositories.*;
+import single.project.e_commerce.utils.commons.AppConst;
 import single.project.e_commerce.utils.commons.GlobalMethod;
 import single.project.e_commerce.utils.commons.VNPayUtils;
 import single.project.e_commerce.utils.enums.ErrorCode;
+import single.project.e_commerce.utils.enums.OrderStatus;
 import single.project.e_commerce.utils.enums.PaymentMethod;
 import single.project.e_commerce.utils.enums.ShippingStatus;
-import single.project.e_commerce.utils.enums.TokenType;
 
 
 import java.util.*;
@@ -35,14 +33,24 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final VNPayConfig vnPayConfig;
     private final OrderRepository orderRepository;
-    private final JwtService jwtService;
     private final UserRepository userRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final ShipmentRepository shipmentRepository;
     private final ProductRepository productRepository;
 
-    public PaymentUrlResponseDTO checkout(PaymentRequestDTO dto, HttpServletRequest request, HttpServletResponse response) {
+    public CheckoutResponseDTO checkout(PaymentRequestDTO dto, HttpServletRequest request) {
         Set<Long> orderIds = dto.getOrderIds();
+        // if customer choose to pay in cast, then return direct
+        if (dto.getPaymentMethod().equals(PaymentMethod.PAY_WHEN_RECEIVED)) {
+            return CheckoutResponseDTO.builder()
+                    .url(null)
+                    .orderIds(orderIds.stream().toList())
+                    .paymentMethod(PaymentMethod.PAY_WHEN_RECEIVED)
+                    .message("You chose pay in cast!. Thank you for using our services")
+                    .build();
+        }
+
+        // calculate the total_price
         List<Order> orders = orderRepository.findAllOrdersWithIdsNoCollectionFetching(new ArrayList<>(orderIds));
         double total_amount = 0;
         for (Order order : orders) {
@@ -51,23 +59,12 @@ public class PaymentService {
         long afterRoundTotalAmount = Math.round(total_amount);
         String bankCode = dto.getBankCode();
 
-        // create cookies store token and orderIds
-        String orderIdsString = orderIds.stream().map(String::valueOf)
-                .collect(Collectors.joining(","));
-        String authorization = request.getHeader("Authorization");
-        if (StringUtils.isBlank(authorization) || !authorization.startsWith("Bearer ")) {
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
-        String token = authorization.substring("Bearer ".length());
-        Cookie orderIdsCookie = createCookie("orderIds", orderIdsString, "/api/payment", 3000);
-        Cookie tokenCookie = createCookie("token", token, "/api/payment", 3000);
-
-        response.addCookie(orderIdsCookie);
-        response.addCookie(tokenCookie);
-
         // return dto response
-        return PaymentUrlResponseDTO.builder()
+        return CheckoutResponseDTO.builder()
                 .url(createPaymentUrl(String.valueOf(afterRoundTotalAmount), bankCode, request))
+                .paymentMethod(PaymentMethod.VNPAY)
+                .orderIds(orderIds.stream().toList())
+                .message("You chose pay by VNPAY!. Thank you for using our services")
                 .build();
     }
 
@@ -91,19 +88,11 @@ public class PaymentService {
         return vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
     }
 
-    public PaymentSuccessResponseDTO success(String orderIdsString, String token, HttpServletResponse response) {
-        // get orderIds and token from cookie
-        List<Long> orderIds = Arrays.stream(orderIdsString.split(","))
-                .map(Long::parseLong).toList();
-        //validate token
-        jwtService.validateToken(token, TokenType.ACCESS);
-        // after get value of cookie, remove the cookie
-        removeCookie("orderIds", "/api/payment", response);
-        removeCookie("token", "/api/payment", response);
-        return PaymentSuccessResponseDTO.builder()
-                .orderIds(orderIds)
-                .message("Payment successfully, your order will be updated and set to the shipment service")
-                // FE use this orderIds to request create payment and shipping
+    public PaymentStatusResponseDTO paymentStatus(String status) {
+        Map<String, String> map = AppConst.VNPAY_ERRORCODE_MAP;
+        return PaymentStatusResponseDTO.builder()
+                .status(status)
+                .message(map.get(status))
                 .build();
     }
 
@@ -111,6 +100,10 @@ public class PaymentService {
     @Transactional
     public String createPaymentAndShipping(AfterPaymentRequestDTO dto) {
         List<Long> orderIds = dto.getOrderIds();
+        // update order status to PAID
+        log.info("update order status to PAID");
+        orderRepository.updateStatusOrderByOrderIds(orderIds, OrderStatus.PAID);
+
         String username = GlobalMethod.extractUserFromContext();
         log.info("find user");
         User user = userRepository.findUserWithNoCollectionByUsername(username)
@@ -135,7 +128,7 @@ public class PaymentService {
         for (Order order : orders) {
             payments.add(Payment.builder()
                     .price(order.getTotalPrice())
-                    .paymentMethod(PaymentMethod.VNPAY)
+                    .paymentMethod(dto.getPaymentMethod())
                     .paidAt(new Date())
                     .order(order)
                     .user(user)
@@ -165,22 +158,5 @@ public class PaymentService {
         shipmentRepository.saveAll(shipments);
         productRepository.saveAll(products);
         return "Create payment and shipping successfully,please check information again to assure nothing wrong";
-    }
-
-
-    private Cookie createCookie(String key, String value, String path, int maxAge) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setPath(path);
-        cookie.setMaxAge(maxAge);
-        cookie.setHttpOnly(true);
-        return cookie;
-    }
-
-    private void removeCookie(String key, String path, HttpServletResponse response) {
-        Cookie cookie = new Cookie(key, null);
-        cookie.setPath(path);
-        cookie.setMaxAge(0);
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
     }
 }

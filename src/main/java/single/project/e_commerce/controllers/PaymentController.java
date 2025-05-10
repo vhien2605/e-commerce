@@ -26,36 +26,23 @@ public class PaymentController {
     @PreAuthorize("hasRole('ADMIN') OR hasRole('CUSTOMER')")
     public ApiResponse checkout(
             @RequestBody @Valid PaymentRequestDTO dto,
-            HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletRequest request
     ) {
         return ApiSuccessResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("create url payment successfully")
-                .data(paymentService.checkout(dto, request, response))
+                .data(paymentService.checkout(dto, request))
                 .build();
     }
 
 
     @GetMapping("/vn-pay-callback")
-    public ApiResponse payCallbackHandler(@RequestParam(name = "vnp_ResponseCode", defaultValue = "99") String status,
-                                          @CookieValue("orderIds") String orderIds,
-                                          @CookieValue("token") String token,
-                                          HttpServletResponse response
-    ) {
-        if (status.equals("00")) {
-            return ApiSuccessResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("success")
-                    .data(paymentService.success(orderIds, token, response))
-                    .build();
-        } else {
-            return ApiSuccessResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message("failed")
-                    .data(null)
-                    .build();
-        }
+    public ApiResponse payCallbackHandler(@RequestParam(name = "vnp_ResponseCode", defaultValue = "99") String status) {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("api response success")
+                .data(paymentService.paymentStatus(status))
+                .build();
     }
 
     @PostMapping("/create-payment-and-shipping")
