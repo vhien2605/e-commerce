@@ -10,7 +10,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class AddressRequestDTO implements Serializable {
-
     @NotBlank(message = "Address's name must not be blank!")
     private String name;
 

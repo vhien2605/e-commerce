@@ -4,23 +4,30 @@ package single.project.e_commerce.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class FileService {
     private final Cloudinary cloudinary;
+    private final AsyncFileService asyncFileService;
 
     public String uploadFile(MultipartFile file, String folderName) throws IOException {
-        Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(),
-                ObjectUtils.asMap(
-                        "folder", folderName
-                ));
-        return result.get("secure_url").toString();
+        String cloudName = cloudinary.config.cloudName;
+        String uuid = UUID.randomUUID().toString();
+        String extension = getFileExtension(file);
+        String url = String.format(
+                "https://res.cloudinary.com/%s/image/upload/%s/%s.%s",
+                cloudName, folderName, uuid, extension
+        );
+        // handle upload to cloud in sub thread
+        asyncFileService.handleUploadFile(file, folderName, uuid, cloudinary);
+        return url;
     }
 
 
@@ -29,7 +36,15 @@ public class FileService {
         if (publicId == null) {
             return;
         }
-        cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        asyncFileService.handleDeleteFile(publicId, cloudinary);
+    }
+
+    private String getFileExtension(MultipartFile file) {
+        String originalName = file.getOriginalFilename();
+        if (originalName == null || !originalName.contains(".")) {
+            return "jpg";
+        }
+        return originalName.substring(originalName.lastIndexOf('.') + 1);
     }
 
 

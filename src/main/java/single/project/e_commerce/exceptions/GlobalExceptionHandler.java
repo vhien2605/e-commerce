@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
         return ApiErrorResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(e.getMessage())
-                .error(e.getCause().getMessage())
+                .error(e.getMessage())
                 .path(request.getDescription(false))
                 .build();
     }
