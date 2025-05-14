@@ -81,6 +81,4 @@ public class RoleService {
                 .map(roleMapper::toResponse)
                 .toList();
     }
-
-
 }

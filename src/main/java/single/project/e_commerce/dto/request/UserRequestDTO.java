@@ -2,6 +2,7 @@ package single.project.e_commerce.dto.request;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import single.project.e_commerce.utils.annotations.EnumPattern;
@@ -12,8 +13,9 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@Builder
 public class UserRequestDTO implements Serializable {
-    
+
     @NotBlank(message = "full name must not be blank")
     private String fullName;
 

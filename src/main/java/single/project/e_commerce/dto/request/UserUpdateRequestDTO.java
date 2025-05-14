@@ -20,8 +20,6 @@ import java.util.Set;
 @Getter
 @Builder
 public class UserUpdateRequestDTO implements Serializable {
-
-
     @NotBlank(message = "full name must not be blank")
     private String fullName;
 

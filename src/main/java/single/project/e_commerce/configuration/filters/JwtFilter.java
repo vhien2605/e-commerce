@@ -1,7 +1,6 @@
 package single.project.e_commerce.configuration.filters;
 
 
-import io.jsonwebtoken.JwtException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
