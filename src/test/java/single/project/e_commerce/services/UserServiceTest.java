@@ -2,21 +2,22 @@ package single.project.e_commerce.services;
 
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import single.project.e_commerce.dto.request.AddressRequestDTO;
 import single.project.e_commerce.dto.request.UserRequestDTO;
 import single.project.e_commerce.dto.request.UserUpdateRequestDTO;
+import single.project.e_commerce.dto.response.PageResponseDTO;
 import single.project.e_commerce.dto.response.UserResponseDTO;
+import single.project.e_commerce.exceptions.AppException;
 import single.project.e_commerce.mappers.UserMapper;
 import single.project.e_commerce.models.*;
 import single.project.e_commerce.repositories.AddressRepository;
@@ -25,6 +26,7 @@ import single.project.e_commerce.repositories.UserRepository;
 import single.project.e_commerce.repositories.specifications.GenericSpecification;
 import single.project.e_commerce.repositories.specifications.SpecificationBuilder;
 import single.project.e_commerce.utils.commons.AppConst;
+import single.project.e_commerce.utils.enums.ErrorCode;
 import single.project.e_commerce.utils.enums.Gender;
 import single.project.e_commerce.utils.enums.SearchOperation;
 import single.project.e_commerce.utils.enums.Status;
@@ -38,6 +40,7 @@ import java.util.regex.Pattern;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("/test.properties")
 public class UserServiceTest {
 
     @MockitoBean
@@ -261,5 +264,128 @@ public class UserServiceTest {
         Assertions.assertEquals(SearchOperation.EQUALITY, genericSpecification.getCriteria().getOperation());
         Assertions.assertEquals("testing", genericSpecification.getCriteria().getValue());
         Assertions.assertEquals("id: ASC", sort.toString());
+    }
+
+
+    @Test
+    public void findUserByAdvancedFilterAndPaginationTest() {
+        Pageable pageable = PageRequest.of(0, 2);
+
+        Permission permission = Permission.builder()
+                .name("read_product")
+                .build();
+        Role role = Role.builder()
+                .name("CUSTOMER")
+                .permissions(Set.of(permission))
+                .build();
+
+        String[] user = {"username:testing"};
+        String[] sortBy = {"id:asc"};
+
+        SpecificationBuilder<User> builder = new SpecificationBuilder<>();
+        Pattern pattern = Pattern.compile(AppConst.SEARCH_SPEC_OPERATOR);
+        Pattern sortPattern = Pattern.compile(AppConst.SORT_BY);
+        for (String s : user) {
+            Matcher matcher = pattern.matcher(s);
+            if (matcher.find()) {
+                builder.with(matcher.group(1), matcher.group(2), matcher.group(3),
+                        matcher.group(4), matcher.group(5), matcher.group(6));
+            }
+        }
+        Specification<User> specification = builder.build();
+
+
+        List<Sort.Order> sortOrders = new ArrayList<>();
+        for (String sb : sortBy) {
+            Matcher sortMatcher = sortPattern.matcher(sb);
+            if (sortMatcher.find()) {
+                String field = sortMatcher.group(1);
+                String value = sortMatcher.group(3);
+                Sort.Direction direction = (value.equalsIgnoreCase("ASC")) ? Sort.Direction.ASC : Sort.Direction.DESC;
+                sortOrders.add(new Sort.Order(direction, field));
+            }
+        }
+        Sort sort = Sort.by(sortOrders);
+
+        // mock findAll in repository
+        List<User> temp = List.of(
+                User.builder()
+                        .fullName("Tran minh coi")
+                        .email("asdad@gmail.com")
+                        .username("testing")
+                        .password("deptrai")
+                        .gender(Gender.MALE)
+                        .status(Status.ACTIVE)
+                        .roles(Set.of(role))
+                        .address(Address.builder()
+                                .name("trung dong")
+                                .city("nam dinh")
+                                .country("viet nam")
+                                .build())
+                        .build());
+        Page<User> page = new PageImpl<>(temp, pageable, 1);
+        Mockito.when(userRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
+                .thenReturn(page);
+        Mockito.when(userRepository.findAllUsersWithId(Mockito.any(List.class)))
+                .thenReturn(temp);
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sort);
+        PageResponseDTO<?> result = userService.getAllUsersAdvancedFilterAndPagination(pageable, user, sortBy);
+        List<UserResponseDTO> userResult = (List<UserResponseDTO>) result.getData();
+        GenericSpecification<User> genericSpecification = (GenericSpecification<User>) specification;
+        Assertions.assertEquals("Tran minh coi", userResult.get(0).getFullName());
+        Assertions.assertEquals("username", genericSpecification.getCriteria().getKey());
+        Assertions.assertEquals(SearchOperation.EQUALITY, genericSpecification.getCriteria().getOperation());
+        Assertions.assertEquals("testing", genericSpecification.getCriteria().getValue());
+        Assertions.assertEquals("id: ASC", sort.toString());
+        Assertions.assertEquals(0, result.getPageNo());
+        Assertions.assertEquals(2, result.getPageSize());
+    }
+
+    @Test
+    public void changeUserPasswordTest() {
+        Permission permission = Permission.builder()
+                .name("read_product")
+                .build();
+        Role role = Role.builder()
+                .name("CUSTOMER")
+                .permissions(Set.of(permission))
+                .build();
+        String username = "testing";
+        String password = "vaicut";
+        Mockito.when(userRepository.findByUsername(username)).thenReturn(
+                Optional.of(User.builder()
+                        .fullName("Tran minh coi")
+                        .email("asdad@gmail.com")
+                        .username("testing")
+                        .password("deptrai")
+                        .gender(Gender.MALE)
+                        .status(Status.ACTIVE)
+                        .roles(Set.of(role))
+                        .address(Address.builder()
+                                .name("trung dong")
+                                .city("nam dinh")
+                                .country("viet nam")
+                                .build())
+                        .build())
+        );
+        Assertions.assertEquals("changed password successfully!", userService.changeUserPassword(username, password));
+    }
+
+    @Test
+    public void changeUserPasswordExceptionTest() {
+        String username = "invisible";
+        String password = "vaicut";
+        Permission permission = Permission.builder()
+                .name("read_product")
+                .build();
+        Role role = Role.builder()
+                .name("CUSTOMER")
+                .permissions(Set.of(permission))
+                .build();
+        Mockito.when(userRepository.findByUsername(username)).
+                thenThrow(new AppException(ErrorCode.USER_NOT_EXIST));
+        Assertions.assertThrows(AppException.class, () -> userService.changeUserPassword(username, password));
     }
 }
