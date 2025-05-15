@@ -44,11 +44,6 @@ public class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
-    @Autowired
-    private JwtService jwtService;
-
-    private String jwtToken;
-
 
     @Test
     @WithMockUser(username = "testing", roles = "SYSTEM_ADMIN")
