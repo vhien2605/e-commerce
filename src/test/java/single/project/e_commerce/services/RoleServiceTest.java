@@ -129,7 +129,6 @@ public class RoleServiceTest {
                                 .build()
                 ));
         List<RoleResponseDTO> result = roleService.getAllRolesWithPermissions();
-
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals("ADMIN", result.getFirst().getName());
         Assertions.assertEquals(1, result.getFirst().getPermissions().size());
