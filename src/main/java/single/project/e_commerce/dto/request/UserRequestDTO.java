@@ -15,7 +15,6 @@ import java.io.Serializable;
 @Setter
 @Builder
 public class UserRequestDTO implements Serializable {
-
     @NotBlank(message = "full name must not be blank")
     private String fullName;
 

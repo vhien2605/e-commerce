@@ -8,10 +8,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import single.project.e_commerce.dto.request.LoginRequestDTO;
 import single.project.e_commerce.dto.request.ResetPasswordRequestDTO;
+import single.project.e_commerce.dto.request.UserRequestDTO;
 import single.project.e_commerce.dto.response.ApiResponse;
 import single.project.e_commerce.dto.response.ApiSuccessResponse;
 import single.project.e_commerce.services.AuthenticationService;
 import single.project.e_commerce.services.RedisTokenService;
+import single.project.e_commerce.services.UserService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,6 +22,7 @@ import single.project.e_commerce.services.RedisTokenService;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final RedisTokenService tokenService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ApiResponse login(@RequestBody @Valid LoginRequestDTO request) {
@@ -47,6 +50,15 @@ public class AuthenticationController {
                 .status(HttpStatus.OK.value())
                 .message("refresh token successfully!")
                 .data(authenticationService.refresh(request))
+                .build();
+    }
+
+    @PostMapping("/register")
+    public ApiResponse register(@RequestBody @Valid UserRequestDTO dto) {
+        return ApiSuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("register account successfully!")
+                .data(userService.saveUser(dto))
                 .build();
     }
 
