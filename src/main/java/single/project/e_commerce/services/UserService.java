@@ -27,6 +27,7 @@ import single.project.e_commerce.repositories.UserRepository;
 import single.project.e_commerce.repositories.specifications.SpecificationBuilder;
 import single.project.e_commerce.utils.commons.AppConst;
 import single.project.e_commerce.utils.enums.ErrorCode;
+import single.project.e_commerce.utils.enums.MailTemplateType;
 
 import java.util.*;
 import java.util.function.Function;
@@ -44,6 +45,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
+    private final MailService mailService;
 
     public UserResponseDTO saveUser(UserRequestDTO userRequestDTO) {
         if (userRepository.existsByUsername(userRequestDTO.getUsername())
@@ -75,6 +77,9 @@ public class UserService {
         //set password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        //send mail
+        mailService.sendMessage("hvu6582@gmail.com", userRequestDTO.getEmail(), MailTemplateType.ACCOUNT_REGISTRATION, null);
+        
         userRepository.save(user);
         return userMapper.toResponse(user);
     }

@@ -34,7 +34,8 @@ public enum ErrorCode {
     QUANTITY_INVALID(400, "quantity input is invalid", HttpStatus.BAD_REQUEST),
     ORDER_NOT_EXIST(400, "order is not exist", HttpStatus.BAD_REQUEST),
     TOKEN_SIGNATURE_INVALID(400, "token signature is invalid", HttpStatus.BAD_REQUEST),
-    SHIPMENT_NOT_EXIST(400, "Shipment is not exist", HttpStatus.BAD_REQUEST);
+    SHIPMENT_NOT_EXIST(400, "Shipment is not exist", HttpStatus.BAD_REQUEST),
+    MAIL_SERVER_ERROR(500, "mail server is error", HttpStatus.INTERNAL_SERVER_ERROR);
     private final int code;
     private final String message;
     private final HttpStatus httpStatus;

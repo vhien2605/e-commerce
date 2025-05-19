@@ -21,4 +21,5 @@ public class AppConst {
             Map.entry("79", "Giao dịch không thành công do: KH nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịch"),
             Map.entry("99", "Các lỗi khác (lỗi còn lại, không có trong danh sách mã lỗi đã liệt kê)")
     );
+    
 }
