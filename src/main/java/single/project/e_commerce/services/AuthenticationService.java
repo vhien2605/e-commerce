@@ -115,15 +115,8 @@ public class AuthenticationService {
     }
 
     public ForgotPasswordResponseDTO forgot(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        if (StringUtils.isBlank(authorization) || !authorization.startsWith("Bearer ")) {
-            throw new AppException(ErrorCode.TOKEN_INVALID);
-        }
-        String accessToken = authorization.substring("Bearer ".length());
-        jwtService.validateToken(accessToken, TokenType.ACCESS);
-
-        String username = jwtService.extractUsername(accessToken, TokenType.ACCESS);
-        User user = userRepository.findUserWithRoleAndPermissionByUsername(username)
+        String resetEmail = request.getHeader("reset-email");
+        User user = userRepository.findUserWithRoleAndPermissionByEmail(resetEmail)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         String resetToken = jwtService.generateToken(new SecurityUser(user), TokenType.RESET);
         return ForgotPasswordResponseDTO.builder()

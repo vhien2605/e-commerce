@@ -35,6 +35,17 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("SELECT u From User u WHERE u.username=:username")
     Optional<User> findUserWithRoleAndPermissionByUsername(@Param("username") String username);
 
+
+    @EntityGraph(attributePaths = {
+            "roles",
+            "roles.permissions",
+            "address",
+            "cart",
+            "shop"
+    })
+    @Query("SELECT u From User u WHERE u.email=:email")
+    Optional<User> findUserWithRoleAndPermissionByEmail(@Param("email") String email);
+
     public boolean existsByUsername(String username);
 
     public boolean existsByEmail(String email);
