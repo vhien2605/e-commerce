@@ -1,7 +1,7 @@
 # E-Commerce APIs
 - This e-commerce APIs project includes almost full services of other ecommerce systems in real life.
 ## Technology Stack
-- **Architecture**: Clean Architecture, Restful APIs
+- **Architecture**: Layer Architecture, Restful APIs
 - **Framework**: Spring boot, Spring Security, Spring Data JPA
 - **Database**: MySQL
 - **Caching technology**: Redis
