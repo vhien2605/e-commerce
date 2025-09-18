@@ -40,6 +40,8 @@ public class AuthenticationService {
                         request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            log.info(request.getPassword());
+            log.info(user.getPassword());
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
         String accessToken = jwtService.generateToken(new SecurityUser(user), TokenType.ACCESS);
