@@ -49,6 +49,9 @@ You can run this service by several ways
 - Run by maven command (mvn spring-boot:run)
 - Run in your IDE (vscode, IDE)
 - Run in docker container
+  - fork the project from my github repository
+  - cd to root path of the project
+  - run docker-compose up -d to start all the containers 
 
 
 ## Project Structure
