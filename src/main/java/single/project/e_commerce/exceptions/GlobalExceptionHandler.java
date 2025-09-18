@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false))
                 .build();
     }
-
+    
 
     @ExceptionHandler(value = {AppException.class})
     @ResponseStatus(HttpStatus.OK)

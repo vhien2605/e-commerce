@@ -1,0 +1,30 @@
+services:
+  spring-api-service:
+    build: .
+    image: api-service-image
+    container_name: spring-api-service-container-18-9
+    env_file:
+      - .env
+    ports:
+      - 8080:8080
+    networks:
+      - spring-api-ecommerce-network
+    restart: on-failure
+  mysql:
+    image: mysql:8
+    container_name: mysql-container-18-9
+    env_file:
+      - .env
+    networks:
+      - spring-api-ecommerce-network
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis_container-18-9
+    env_file:
+      - .env
+    networks:
+      - spring-api-ecommerce-network
+networks:
+  spring-api-ecommerce-network:
+    name: spring-api-ecommerce-network
+    driver: bridge
