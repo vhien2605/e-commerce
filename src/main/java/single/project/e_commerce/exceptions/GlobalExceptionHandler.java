@@ -3,6 +3,7 @@ package single.project.e_commerce.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import single.project.e_commerce.dto.response.ApiErrorResponse;
 import single.project.e_commerce.dto.response.ApiResponse;
+import single.project.e_commerce.utils.enums.ErrorCode;
 
 @RestControllerAdvice
 @Slf4j
@@ -29,7 +31,7 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false))
                 .build();
     }
-    
+
 
     @ExceptionHandler(value = {AppException.class})
     @ResponseStatus(HttpStatus.OK)
@@ -40,6 +42,19 @@ public class GlobalExceptionHandler {
                 .status(e.getError().getCode())
                 .message(e.getError().getMessage())
                 .error(e.getError().name())
+                .path(request.getDescription(false))
+                .build();
+    }
+
+    @ExceptionHandler(value = {AccessDeniedException.class})
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse handle(AccessDeniedException e, WebRequest request) {
+        log.info("---------------------------Access denied exception handler start---------------------------");
+        String error = e.getMessage();
+        return ApiErrorResponse.builder()
+                .status(ErrorCode.ACCESS_DENIED.getCode())
+                .message(ErrorCode.ACCESS_DENIED.getMessage())
+                .error(ErrorCode.ACCESS_DENIED.name())
                 .path(request.getDescription(false))
                 .build();
     }
